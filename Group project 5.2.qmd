@@ -1,0 +1,115 @@
+---
+title: "Group project5.1: German Chancelor Candidates Debates"
+author: "Mattia, Margarita, Iria, and Lixin lakeman (12857890)"
+format: docx
+html:
+embed_resources: true
+pdf: default
+docx: default
+editor: visual
+date: now
+execute: 
+eval: true
+echo: false
+warning: false
+---
+
+#title 1 ##title 2
+
+## **Getting started**
+
+**Install packages and load to library**
+
+```{r}
+install.packages("deeplr")
+install.packages("devtools")
+devtools::install_github("zumbov2/deeplr")
+
+library(tidyverse)
+library(deeplr) 
+```
+
+**Import data**
+
+```{r}
+setwd("")
+
+debate <- read_csv("Debate 2009.csv")
+responders<- read_csv("Responders2009.csv")
+content_analysis <- read.csv("Content analysis debate 2009.csv")
+```
+
+**Translate the text**
+
+Underneath i also have the code to manually translate some variable names with rename()
+
+NOTE! for the automatic translation, you need a DeepL pro account. But this has limited translation per month, so better to do this later. Therefore the code is deactivated.
+
+```{r}
+responders <- rename(responders, Location = Standort, Participation_W1 = Teilnahme1, 
+                     Participation_W2 = Teilnahme2, 
+                     Participation_W3 = Teilnahme3,
+                     Participation_W4 = Teilnahme4)
+
+#var_list=c('THEMA', 'TEXT')
+#for(var in var_list){ content_analysis[,var]=translate2(text = content_analysis[,var], 
+                                    #source_lang = "DE",
+                                    #target_lang = "EN",
+                                    #auth_key = "[insert key here]")}
+```
+
+## **Research Questions**
+
+**Research Question one:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+
+**Research Question two:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+
+## **Tidying the data**
+
+**Principle one: Each type of case needs its own tibble**
+
+```{r}
+responders |> count(Responder) |>  filter(n > 1)
+
+responders_W1 <- responders|> 
+  select(Responder, Teilnahme1, starts_with("A")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W2 <- responders|> 
+  select(Responder, Teilnahme2, starts_with("B")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W3 <- responders|> 
+  select(Responder, Teilnahme3, starts_with("C")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W4 <- responders|> 
+  select(Responder, Teilnahme4, starts_with("D")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+
+```
+
+**Principle two:**
+
+```{r}
+
+```
+
+**Principle three:**
+
+```{r}
+
+```
+
+**Principle four:**
+
+```{r}
+
+```
+
+## \[New pragraph\]
