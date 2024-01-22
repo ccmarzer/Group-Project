@@ -60,17 +60,17 @@ responders <- rename(responders, Location = Standort, Participation_W1 = Teilnah
 
 ## **Research Questions**
 
-**Research Question one:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+**Research Question One:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
 
-**Research Question two:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+**Research Question Two:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
 
-**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+**Research Question Three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
 
-**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+**Research Question Four:** To what extent do viewer reactions to the debate relate to actual voting behaviour?
 
 ## **Tidying the data**
 
-**Principle one: Each type of case needs its own tibble**
+**Principle one: Each type of case needs its own tibble.**
 
 ```{r}
 responders |> count(Responder) |>  filter(n > 1)
@@ -100,9 +100,15 @@ responders_W4 <- responders|>
 
 ```
 
-**Principle three:**
+**Principle three: Each variable its own column.**
 
 ```{r}
+speaker <- content_analysis |> 
+  group_by(SPRECHER) |> 
+  mutate(row_id = row_number()) |>
+  pivot_wider(names_from = SPRECHER, values_from = TEXT) |> select(-row_id)
+
+
 
 ```
 
@@ -112,4 +118,4 @@ responders_W4 <- responders|>
 
 ```
 
-## \[New pragraph\]
+## \[New paragraph\]
