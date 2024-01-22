@@ -150,7 +150,7 @@ responders_W4_01 <- responders_W4 |>
   )
 
 
-#the missing values were presented by "98", "99" or "100", then we should first mutate them to "NA"?
+#the missing values were presented by "98", "99" or "100"
 #also same functions needed to be applied to resp_w2~w4
 #------------------------------------------------------------
 
