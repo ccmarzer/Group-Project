@@ -1,0 +1,190 @@
+---
+title: "Group project5.1: German Chancelor Candidates Debates"
+author: "Mattia, Margarita, Iria, and Lixin lakeman (12857890)"
+format: docx
+html:
+embed_resources: true
+pdf: default
+docx: default
+editor: visual
+date: now
+execute: 
+eval: true
+echo: false
+warning: false
+---
+
+#title 1 ##title 2
+
+## **Getting started**
+
+**Install packages and load to library**
+
+```{r}
+install.packages("deeplr")
+install.packages("devtools")
+devtools::install_github("zumbov2/deeplr")
+
+library(tidyverse)
+library(deeplr) 
+```
+
+**Import data**
+
+```{r}
+setwd("")
+
+debate <- read_csv("Debate 2009.csv")
+responders<- read_csv("Responders2009.csv")
+content_analysis <- read.csv("Content analysis debate 2009.csv")
+```
+
+**Translate the text**
+
+Underneath i also have the code to manually translate some variable names with rename()
+
+NOTE! for the automatic translation, you need a DeepL pro account. But this has limited translation per month, so better to do this later. Therefore the code is deactivated.
+
+```{r}
+responders <- rename(responders, Location = Standort, Participation_W1 = Teilnahme1, 
+                     Participation_W2 = Teilnahme2, 
+                     Participation_W3 = Teilnahme3,
+                     Participation_W4 = Teilnahme4)
+
+#var_list=c('THEMA', 'TEXT')
+#for(var in var_list){ content_analysis[,var]=translate2(text = content_analysis[,var], 
+                                    #source_lang = "DE",
+                                    #target_lang = "EN",
+                                    #auth_key = "[insert key here]")}
+```
+
+## **Research Questions**
+
+**Research Question one:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+
+**Research Question two:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behavior.
+
+## **Tidying the data**
+
+**Principle one: Each type of case needs its own tibble**
+
+```{r}
+responders |> count(Responder) |>  filter(n > 1)
+
+responders_W1 <- responders|> 
+  select(Responder, Teilnahme1, starts_with("A")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W2 <- responders|> 
+  select(Responder, Teilnahme2, starts_with("B")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W3 <- responders|> 
+  select(Responder, Teilnahme3, starts_with("C")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+responders_W4 <- responders|> 
+  select(Responder, Teilnahme4, starts_with("D")) |> 
+  distinct(Responder, .keep_all = TRUE)
+
+
+```
+
+**Principle two:**
+
+```{r}
+
+```
+
+**Principle three:**
+
+```{r}
+
+```
+
+**Principle four:**
+
+```{r}
+
+```
+
+## \[New pragraph\]
+
+```{r}
+#select the variables we need in each dataset in 4 waves:
+
+#...........
+#for the responder dataset, we need following variables:
+
+responders_W1_01 <- responders_W1 |>
+  select(Responder, A44, A45, A46, 
+         A03, A04_01, A04_03, A05, 
+         A40_01, A40_02, A56_01, A56_03, A57,
+         A23_01, A23_02, A23_03, A23_04, A23_05, A23_06, A24_01, A24_02
+         )
+
+responders_W2_01 <- responders_W2 |>
+  select(Responder, 
+         B03, B04_01, B04_03, B05, 
+         B40_01, B40_02, 
+         starts_with("B93"),
+         B23_01, B23_02, B23_03, B23_04, B23_05, B23_06, B24_01, B24_02
+  )
+
+responders_W3_01 <- responders_W3 |>
+  select(Responder, 
+         C03, C04_01, C04_03, C05, 
+         C40_01, C40_02, 
+         C23_01, C23_02, C23_03, C23_04, C23_05, C23_06, C24_01, C24_02
+  )
+
+responders_W4_01 <- responders_W4 |>
+  select(Responder, 
+         D03, D04_01, D04_03, 
+         D40_01, D40_02, 
+         D23_01, D23_02, D23_03, D23_04, D23_05, D23_06, D24_01, D24_02
+  )
+
+
+#the missing values were presented by "98", "99" or "100", then we should first mutate them to "NA"?
+#also same functions needed to be applied to resp_w2~w4
+#------------------------------------------------------------
+
+#for debate dataset, we need following variables:
+
+debate_01 <- debate|>
+  select(Responder, starts_with("t"))
+
+#------------------------------------------------------------------
+#for content analysis dataset, the missing values were presented by "100":
+
+contentanalysis_01 <- contentanalysis|>
+  select(starts_with("START"), starttime,
+         starts_with("END"), endtime,
+         DAUER,
+         SPRECHER, MODFRAGE, STRATEGI, VALENZ, INHALT, CHARAKTE, THEMA, POLHAND, KONKR, 
+         GRPDARST, HUMOR, METAPHER, SCHIMPF, ZAHLEN, LAGE, WERTE, STATISTI, BEISPIEL, HISTORIE, ZITAT,
+         starts_with("OBJ"))
+#-------------------------------
+#count the NAs:
+responders_W2_01 |> 
+  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+
+responders_W1_01 |> 
+  summarize_all(~sum(.%in% c(98,99,100), na.rm = TRUE))
+
+responders_W2_01 |> 
+  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+
+responders_W3_01 |> 
+  summarize_all(~sum(.%in% c(98,99,101,102), na.rm = TRUE))
+
+responders_W4_01 |> 
+  summarize_all(~sum(.%in% c(99,100,104), na.rm = TRUE))
+
+
+```
