@@ -142,18 +142,18 @@ responders_W4 <- responders|>
 
 **Foreign key**
 
+For the debate and content analysis data set, the foreign key is... Determine the foreign keys of the resulting debate tibble. We have a problem here, because there is no straightforward join key. We need to find a way to aggregate the content analysis data in second, and maybe we are getting something wrong in the four rules. Determine the type of relationship we find between these tables: one-to-one, one-to-many, many-to-many.
+
+```{r}
+
+```
+
 For the debate and responders data set, the foreign key is 'Responder'. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore the two datasets debate and responders can be joined by this variable
 
 ```{r}
 fkey1 <- debate |> select(Responder)
 fkey2 <- responders |> select (Responder)
 anti_join(fkey1, fkey2, by = "Responder")
-```
-
-For the debate and content analysis data set, the foreign key is a time string of hours:minutes:seconds.
-
-```{r}
-
 ```
 
 **Type of relation**
