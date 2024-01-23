@@ -14,6 +14,7 @@ warning: false
 ---
 
 # ***Title***
+
 ## *Subtitle*
 
 ```{r setup, include = FALSE}
@@ -42,7 +43,7 @@ The four individual research questions formulated with the provided data are sho
 
 \[Briefly explain the first steps\]
 
-**Install packages and load the necessary libraries.**
+### **Install packages and load the necessary libraries.**
 
 ```{r include = FALSE}
 # If needed, the user must install the "deeplr" library, and install the Github "deeplr" repository via the "devtools" package.
@@ -55,7 +56,7 @@ library(tidyverse) # Loading the "tidyverse" library for data wrangling, analysi
 library(deeplr) # ...and the "deeplr" library, for translating textual data in German.
 ```
 
-**Import data.**
+### **Import data.**
 
 \[Briefly explain what we are importing\]
 
@@ -67,7 +68,7 @@ responders <- read_csv("Responders2009.csv", show_col_types = FALSE)
 content_analysis <- read.csv("Content analysis debate 2009.csv")
 ```
 
-**Translate the text.**
+### **Translate the text.**
 
 \[Briefly explain why and how we translate the text\]
 
@@ -95,7 +96,7 @@ responders <- rename(responders,
 
 ```
 
-## **Tidying the data**
+### **Tidying the data**
 
 Briefly introduce data tidying to the public. Expand the explanations for each principle.
 
@@ -154,7 +155,7 @@ debate <- debate |>
 
 ## **Describing and Handling Missing Values**
 
-## \[Data Selection\]
+###  \[Data Selection\]
 
 Briefly explain why we select our variables a priori (we have a lot of variables and it would not make sense to operate with all of them, for the sake of clarity to the general public).
 
@@ -188,33 +189,33 @@ Briefly explain why we want to count missing values and why we decide to handle 
 #------------------------------------------------------------------
 #for content analysis dataset, the missing values were presented by "100":
 
-contentanalysis_01 <- contentanalysis|>
-  select(starts_with("START"), starttime,
-         starts_with("END"), endtime,
-         DAUER,
-         SPRECHER, MODFRAGE, STRATEGI, VALENZ, INHALT, CHARAKTE, THEMA, POLHAND, KONKR, 
-         GRPDARST, HUMOR, METAPHER, SCHIMPF, ZAHLEN, LAGE, WERTE, STATISTI, BEISPIEL, HISTORIE, ZITAT,
-         starts_with("OBJ"))
+# contentanalysis_01 <- contentanalysis|>
+  # select(starts_with("START"), starttime,
+         # starts_with("END"), endtime,
+         # DAUER,
+         # SPRECHER, MODFRAGE, STRATEGI, VALENZ, INHALT, CHARAKTE, THEMA, POLHAND, KONKR, 
+         # GRPDARST, HUMOR, METAPHER, SCHIMPF, ZAHLEN, LAGE, WERTE, STATISTI, BEISPIEL, HISTORIE, ZITAT,
+         # starts_with("OBJ"))
 #-------------------------------
 #count the NAs:
-responders_W2_01 |> 
-  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+# responders_W2_01 |> 
+  # summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
 
-responders_W1_01 |> 
-  summarize_all(~sum(.%in% c(98,99,100), na.rm = TRUE))
+# responders_W1_01 |> 
+  # summarize_all(~sum(.%in% c(98,99,100), na.rm = TRUE))
 
-responders_W2_01 |> 
-  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+# responders_W2_01 |> 
+  # summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
 
-responders_W3_01 |> 
-  summarize_all(~sum(.%in% c(98,99,101,102), na.rm = TRUE))
+# responders_W3_01 |> 
+  # summarize_all(~sum(.%in% c(98,99,101,102), na.rm = TRUE))
 
-responders_W4_01 |> 
-  summarize_all(~sum(.%in% c(99,100,104), na.rm = TRUE))
+# responders_W4_01 |> 
+  # summarize_all(~sum(.%in% c(99,100,104), na.rm = TRUE))
 
 ```
 
-## **Describing Units**
+### **Describing Units**
 
 \[Units: For each table (with different structure\*) in the complex data set, describe the type(s) of unit(s) in comments in the code (determine and describe the primary key). If necessary, split tables containing different types of units, such that the new tables can be linked and retain all information. Merge tables with the same type of unit.\]
 
@@ -243,7 +244,7 @@ Split data into different tables. The code below creates a table from the respon
 ```{r}
 # How can we find all time-invariant variables?
 
-responders_characteristics <- responders |> select(Responder, A44:A47)
+# responders_characteristics <- responders |> select(Responder, A44:A47)
 ```
 
 ## Data joining
@@ -267,17 +268,18 @@ content_analysis <- content_analysis |>
   ungroup() |>
   relocate(time, Fortlaufende)
 
-debate
-
-joined <- debate |> inner_join(content_analysis, by = "time")
-
-
 anti_join(content_analysis |> select(time), debate |> select(time),
           by = "time") |>
   distinct()
+
+anti_join(debate |> select(time), content_analysis |> select(time),
+          by = "time") |>
+  distinct()
+
+content_analysis |> filter(time == 2769)
 ```
 
-The foreign key of the tidied *debate* data set is now `time` (in seconds). It is easy to ???
+The foreign key of the tidied *debate* data set is now `time` (in seconds). The `anti_join` function is applied twice, to identify all the unmatched cases. There are three distinct instances where no match is found. Firstly, in the starting 28 seconds of the debate, no sentence was recorded in the *content_analysis* data set. Secondly, at `time` 2769 (seconds), no sentence was recorded in the *content_analysis* data set. Thirdly, at `time` 5794 (seconds), no score was recorded in the *debate* data set. Thus, it is advisable to apply an `inner_join`, so as to only keep second-by-second observations that occur in both data sets.
 
 For the debate and responders data set, the foreign key is 'Responder'. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore the two datasets debate and responders can be joined by this variable
 
@@ -301,6 +303,8 @@ anti_join(fkey1, fkey2, by = "Responder")
 
 A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?
 
+**add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494)**
+
 When finished, remember to revise:
 
 a.  The report is well organized and easily readable, describes the data and data tidying steps accurately, and is targeted at the general public.
@@ -315,19 +319,19 @@ c.  The R code utilizes tidyverse functions taught during the course wherever po
 
 The four individual research questions formulated with the provided data are shown below.
 
-**Research Question one:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
 
-**Research Question two:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
 
-**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+**Research Question 3:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
 
-**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
 
 ## \[Analysis and Visualization\]
 
 Briefly introduce the section.
 
-**Research Question 1.**
+### **Research Question 1.**
 
 Report and briefly present Research Question 1 to the general public.
 
@@ -338,7 +342,7 @@ Report and briefly present Research Question 1 to the general public.
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
-**Research Question 2.**
+### **Research Question 2.**
 
 Report and briefly present Research Question 2 to the general public.
 
@@ -349,7 +353,7 @@ Report and briefly present Research Question 2 to the general public.
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
-**Research Question 3.**
+### **Research Question 3**
 
 Report and briefly present Research Question 3 to the general public.
 
@@ -360,7 +364,7 @@ Report and briefly present Research Question 3 to the general public.
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
-**Research Question 4.**
+### **Research Question 4**
 
 Report and briefly present Research Question 4 to the general public.
 
