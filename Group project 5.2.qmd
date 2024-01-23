@@ -1,6 +1,6 @@
 ---
-title: "Group project5.1: German Chancelor Candidates Debates"
-author: "Mattia, Margarita, Iria, and Lixin lakeman (12857890)"
+title: "Group Project 5: German Chancelor Candidates Debates"
+author: "Mattia Guarnerio (14350920), Margarita, Iria, and Lixin Lakeman (12857890)"
 format: docx
 html:
 embed_resources: true
@@ -8,7 +8,6 @@ pdf: default
 docx: default
 editor: visual
 date: now
-execute: 
 eval: true
 echo: false
 warning: false
@@ -20,17 +19,23 @@ warning: false
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-pull from github desktop
-
-```{r}
-git_pull
-
-"ccmarzer/Group_project/Group project 5.2.qmd"
-```
-
 ## **Introduction**
 
 \[Write a brief introduction of the theme\]
+
+## **Research Questions**
+
+\[The research question is sufficiently complex and takes advantage of the strengths of the dataset. Concretely, the graph should use data from at least two different tables in the complex dataset.\]
+
+The four individual research questions formulated with the provided data are shown below.
+
+**Research Question one:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question two:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+
+**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
 
 ## **First steps**
 
