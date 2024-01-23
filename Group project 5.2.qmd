@@ -16,7 +16,25 @@ warning: false
 
 #title 1 ##title 2
 
-## **Getting started**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+pull from github desktop
+
+```{r}
+git_pull
+
+"ccmarzer/Group_project/Group project 5.2.qmd"
+```
+
+## **Introduction**
+
+\[Write a brief introduction of the theme\]
+
+## **First steps**
+
+\[Briefly explain the first steps\]
 
 **Install packages and load to library**
 
@@ -31,17 +49,20 @@ library(deeplr)
 
 **Import data**
 
+\[Briefly explain what we are importing\]
+
 ```{r}
-setwd("")
 
 debate <- read_csv("Debate 2009.csv")
 responders<- read_csv("Responders2009.csv")
-content_analysis <- read.csv("Content analysis debate 2009.csv")
+content_analysis <- read.csv("debate 2009.csv")
 ```
 
 **Translate the text**
 
-Underneath i also have the code to manually translate some variable names with rename()
+\[Briefly explain why and how we translate the text\]
+
+Some column names from the responders dataset are in German. With the rename() function from the dplyr package we can manually translate them into English.
 
 NOTE! for the automatic translation, you need a DeepL pro account. But this has limited translation per month, so better to do this later. Therefore the code is deactivated.
 
@@ -56,25 +77,48 @@ responders <- rename(responders, Location = Standort, Participation_W1 = Teilnah
                                     #source_lang = "DE",
                                     #target_lang = "EN",
                                     #auth_key = "[insert key here]")}
+
 ```
-
-## **Research Questions**
-
-**Research Question One:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
-
-**Research Question Two:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
-
-**Research Question Three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
-
-**Research Question Four:** To what extent do viewer reactions to the debate relate to actual voting behaviour?
 
 ## **Tidying the data**
 
-**Principle one: Each type of case needs its own tibble.**
+Briefly introduce data tidying to the public. Expand the explanations for each principle.
+
+\[Tidy data: Spread (pivot_wider), split (separate), and gather (pivot_longer) variables that are ‘untidy’ in the complex data set. Note that not all problems may occur in each data set. For each type of problem that occurs, tidy at least one variable\]
 
 ```{r}
-responders |> count(Responder) |>  filter(n > 1)
 
+speaker <- content_analysis |> 
+  group_by(SPRECHER) |> 
+  mutate(row_id = row_number()) |>
+  pivot_wider(names_from = SPRECHER, values_from = TEXT) |> select(-row_id)
+```
+
+## Units (principle 1)
+
+\[Units: For each table (with different structure\*) in the complex data set, describe the type(s) of unit(s) in comments in the code (determine and describe the primary key). If necessary, split tables containing different types of units, such that the new tables can be linked and retain all information. Merge tables with the same type of unit\]
+
+To determine units it is necessary to find the primary key of the data set. For both the responders and the debate dataset the primary key is 'Responder'. The code below shows that the values of the 'Responder' variable is unqiue in both datasets. This means that the value only appears once in each dataset. For the contant analysis dataset, the primary key is ....?
+
+**Primary key**
+
+```{r}
+responders |> count(Responder) |> filter(n > 1)
+debate |> count(Responder) |> filter(n > 1)
+content_analysis |> count() |> filter(n > 1)
+```
+
+**Split the data**
+
+Split data into different tables. The code below creates a table from the responders dataset that containts the responders characterstics.
+
+```{r}
+responders_characteristics <- responders |> select(Responder, A44:A47)
+```
+
+The code below contains the code that creates four more tables from the responders data set that each represent a wave.
+
+```{r}
 responders_W1 <- responders|> 
   select(Responder, Teilnahme1, starts_with("A")) |> 
   distinct(Responder, .keep_all = TRUE)
@@ -90,32 +134,203 @@ responders_W3 <- responders|>
 responders_W4 <- responders|> 
   select(Responder, Teilnahme4, starts_with("D")) |> 
   distinct(Responder, .keep_all = TRUE)
-
-
 ```
 
-**Principle two:**
+## Data joining
+
+\[Data joins: Determine the foreign keys of the tables that result from Criteria 1 and 2 and check if all key values have a match in the other table.\]
+
+**Foreign key**
+
+For the debate and responders data set, the foreign key is 'Responder'. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore the two datasets debate and responders can be joined by this variable
+
+```{r}
+fkey1 <- debate |> select(Responder)
+fkey2 <- responders |> select (Responder)
+anti_join(fkey1, fkey2, by = "Responder")
+```
+
+For the debate and content analysis data set, the foreign key is a time string of hours:minutes:seconds.
 
 ```{r}
 
 ```
 
-**Principle three: Each variable its own column.**
+**Type of relation**
+
+\[Data joins: Determine the type of relation between the tables that result from Criteria 1, 2 and 3: one-to-one, one-to-many, many-to-many. Do this at least for the tables involved in Criterion 2.
+
+**Joining tables**
+
+With the function left_join() we add the responders data to the debate data. This function makes sure that the data is added for every case (Responder) in the debate dataset, that is present in the responders dataset.
 
 ```{r}
-speaker <- content_analysis |> 
-  group_by(SPRECHER) |> 
-  mutate(row_id = row_number()) |>
-  pivot_wider(names_from = SPRECHER, values_from = TEXT) |> select(-row_id)
+merged_df1 <- left_join(debate, responders, by = "Responder")
+```
 
+## Scope of the data
 
+\[A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?\]
+
+A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?
+
+When finished, remember to revise:
+
+a.  The report is well organized and easily readable, describes the data and data tidying steps accurately, and is targeted at the general public.
+
+b.  The Quarto document is well organized (i.e. formatted and sufficiently commented) and knits without errors.
+
+c.  The R code utilizes tidyverse functions taught during the course wherever possible and does not include superfluous code (that does nothing), inefficient code (much simpler code was taught), or unnecessary intermediate data objects (instead of piping).
+
+## **Research Questions**
+
+\[The research question is sufficiently complex and takes advantage of the strengths of the dataset. Concretely, the graph should use data from at least two different tables in the complex dataset.\]
+
+The four individual research questions formulated with the provided data are shown below.
+
+**Research Question one:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question two:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+
+**Research Question three:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question four:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+
+## \[Data Selection\]
+
+Briefly explain why we select our variables a priori (we have a lot of variables and it would not make sense to operate with all of them, for the sake of clarity to the general public).
+
+```{r}
+#select the variables we need in each dataset in 4 waves:
+
+#...........
+#for the responder dataset, we need following variables:
+
+responders_W1_01 <- responders_W1 |>
+  select(Responder, A44, A45, A46, 
+         A03, A04_01, A04_03, A05, 
+         A40_01, A40_02, A56_01, A56_03, A57,
+         A23_01, A23_02, A23_03, A23_04, A23_05, A23_06, A24_01, A24_02
+         )
+
+responders_W2_01 <- responders_W2 |>
+  select(Responder, 
+         B03, B04_01, B04_03, B05, 
+         B40_01, B40_02, 
+         starts_with("B93"),
+         B23_01, B23_02, B23_03, B23_04, B23_05, B23_06, B24_01, B24_02
+  )
+
+responders_W3_01 <- responders_W3 |>
+  select(Responder, 
+         C03, C04_01, C04_03, C05, 
+         C40_01, C40_02, 
+         C23_01, C23_02, C23_03, C23_04, C23_05, C23_06, C24_01, C24_02
+  )
+
+responders_W4_01 <- responders_W4 |>
+  select(Responder, 
+         D03, D04_01, D04_03, 
+         D40_01, D40_02, 
+         D23_01, D23_02, D23_03, D23_04, D23_05, D23_06, D24_01, D24_02
+  )
 
 ```
 
-**Principle four:**
+Briefly explain why we want to count missing values and why we decide to handle them in the data wrangling done when visualizing the data.
 
 ```{r}
 
+#the missing values were presented by "98", "99" or "100"
+#also same functions needed to be applied to resp_w2~w4
+#------------------------------------------------------------
+
+#for debate dataset, we need to select respondent, time, and score.
+
+# Correct this code: debate_01 <- debate |>
+ #  select(Responder, starts_with("t"))
+
+#------------------------------------------------------------------
+#for content analysis dataset, the missing values were presented by "100":
+
+contentanalysis_01 <- contentanalysis|>
+  select(starts_with("START"), starttime,
+         starts_with("END"), endtime,
+         DAUER,
+         SPRECHER, MODFRAGE, STRATEGI, VALENZ, INHALT, CHARAKTE, THEMA, POLHAND, KONKR, 
+         GRPDARST, HUMOR, METAPHER, SCHIMPF, ZAHLEN, LAGE, WERTE, STATISTI, BEISPIEL, HISTORIE, ZITAT,
+         starts_with("OBJ"))
+#-------------------------------
+#count the NAs:
+responders_W2_01 |> 
+  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+
+responders_W1_01 |> 
+  summarize_all(~sum(.%in% c(98,99,100), na.rm = TRUE))
+
+responders_W2_01 |> 
+  summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
+
+responders_W3_01 |> 
+  summarize_all(~sum(.%in% c(98,99,101,102), na.rm = TRUE))
+
+responders_W4_01 |> 
+  summarize_all(~sum(.%in% c(99,100,104), na.rm = TRUE))
+
 ```
 
-## \[New paragraph\]
+## 
+
+## \[Analysis and Visualization\]
+
+Briefly introduce the section.
+
+**Research Question 1.**
+
+Report and briefly present Research Question 1 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+**Research Question 2.**
+
+Report and briefly present Research Question 2 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+**Research Question 3.**
+
+Report and briefly present Research Question 3 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+**Research Question 4.**
+
+Report and briefly present Research Question 4 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+## \[Conclusions\]
+
+Write a brief conclusion.
+
+## 
