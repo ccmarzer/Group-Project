@@ -153,75 +153,13 @@ debate <- debate |>
 
 ```
 
-## **Describing and Handling Missing Values**
-
-###  \[Data Selection\]
-
-Briefly explain why we select our variables a priori (we have a lot of variables and it would not make sense to operate with all of them, for the sake of clarity to the general public).
-
-```{r}
-debate |>
-  summarise_all(~sum(is.na(.))) |>
-  pivot_longer(everything(), names_to = "Variable", values_to = "Missings") |>
-  filter(Missings != 0)
-
-content_analysis |>
-  summarise_all(~sum(is.na(.))) |>
-  pivot_longer(everything(), names_to = "Variable", values_to = "Missings") |>
-  filter(Missings != 0)
-
-# How should we handle missings in the responders data set? Should we eliminate participants x waves not present in a specific wave?
-```
-
-Briefly explain why we want to count missing values and why we decide to handle them in the data wrangling done when visualizing the data.
-
-```{r}
-
-#the missing values were presented by "98", "99" or "100"
-#also same functions needed to be applied to resp_w2~w4
-#------------------------------------------------------------
-
-#for debate dataset, we need to select respondent, time, and score.
-
-# Correct this code: debate_01 <- debate |>
- #  select(Responder, starts_with("t"))
-
-#------------------------------------------------------------------
-#for content analysis dataset, the missing values were presented by "100":
-
-# contentanalysis_01 <- contentanalysis|>
-  # select(starts_with("START"), starttime,
-         # starts_with("END"), endtime,
-         # DAUER,
-         # SPRECHER, MODFRAGE, STRATEGI, VALENZ, INHALT, CHARAKTE, THEMA, POLHAND, KONKR, 
-         # GRPDARST, HUMOR, METAPHER, SCHIMPF, ZAHLEN, LAGE, WERTE, STATISTI, BEISPIEL, HISTORIE, ZITAT,
-         # starts_with("OBJ"))
-#-------------------------------
-#count the NAs:
-# responders_W2_01 |> 
-  # summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
-
-# responders_W1_01 |> 
-  # summarize_all(~sum(.%in% c(98,99,100), na.rm = TRUE))
-
-# responders_W2_01 |> 
-  # summarize_all(~sum(.%in% c(99,101,102), na.rm = TRUE))
-
-# responders_W3_01 |> 
-  # summarize_all(~sum(.%in% c(98,99,101,102), na.rm = TRUE))
-
-# responders_W4_01 |> 
-  # summarize_all(~sum(.%in% c(99,100,104), na.rm = TRUE))
-
-```
-
 ### **Describing Units**
+
+**Principle 1: Each type of case needs its own tibble.**
 
 \[Units: For each table (with different structure\*) in the complex data set, describe the type(s) of unit(s) in comments in the code (determine and describe the primary key). If necessary, split tables containing different types of units, such that the new tables can be linked and retain all information. Merge tables with the same type of unit.\]
 
-**correct with the new primary keys**
-
-To determine units it is necessary to find the primary key of the data set. For both the responders and the debate dataset the primary key is 'Responder'. The code below shows that the values of the 'Responder' variable is unqiue in both datasets. This means that the value only appears once in each dataset. For the content analysis dataset, the primary key is *Fortlaufende*, which represents a time unit that has been classified as a sentence in the debate.
+To determine the type of units, or type of cases, in the table it is necessary to find the primary key. For both the responders dataset the primary key is: responder, wave, which describes the responder per wave. For the debate dataset, the primary key is: responder, time, which describes the responder per time unit. For the contant analysis dataset, the primary key is Fortlaufende, which represents a time unit that has been classified as a sentence in the debate. The code below shows that these primary keys, values of the combination of these variables, are unique in their respective table. This means that the value only appears once in each dataset.
 
 **Finding the primary keys.**
 
@@ -231,20 +169,15 @@ debate |> count(Responder, time) |> filter(n > 1)
 content_analysis |> count(Fortlaufende) |> filter(n > 1)
 ```
 
-Comment on the primary keys. Why do we only need to split the *responders* data set?
+\[Why do we only need to split the responder dataset?\]
 
 **Splitting the data.**
 
-**Principle 1: Each type of case needs its own tibble.**
-
-Information on each different type of case in a data set must be transferred into a separate tibble.
-
-Split data into different tables. The code below creates a table from the responders dataset that contains the responders' characteristics.
+Information on each different type of case in a data set must be transferred into a separate tibble. The code below creates a table from the responders dataset that contains the responders' characteristics.
 
 ```{r}
 # How can we find all time-invariant variables?
-
-# responders_characteristics <- responders |> select(Responder, A44:A47)
+responders_characteristics <- responders |> select(Responder, A44:A47)
 ```
 
 ## Data joining
