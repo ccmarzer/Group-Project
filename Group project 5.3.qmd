@@ -77,12 +77,23 @@ Some column names from the responders dataset are in German. With the rename() f
 NOTE! for the automatic translation, you need a DeepL pro account. But this has limited translation per month, so better to do this later. Therefore the code is deactivated.
 
 ```{r}
-responders <- rename(responders,
-                     Location = Standort, Participation_W1 = Teilnahme1, 
+responders <- responders |> rename(
+                     Location = Standort, 
+                     Participation_W1 = Teilnahme1, 
                      Participation_W2 = Teilnahme2, 
                      Participation_W3 = Teilnahme3,
                      Participation_W4 = Teilnahme4
                      )
+
+content_analysis <- content_analysis|> rename(
+                     duration_time = DAUER, 
+                     Participation_W1 = SPRECHER,
+                     Interupted = UNTERBR,
+                     Content = INHALT,
+                     Character = CHARAKTE,
+                     Theme = THEMA,
+                     Metaphor = METAPHER,
+                     Scold = SCHIMPF)
 
 # var_list = c("THEMA", "TEXT")
 
@@ -92,7 +103,16 @@ responders <- rename(responders,
     # target_lang = "EN", auth_key = "[insert key here]")
   # }
 
-# rm(var_list)
+
+#write a csv file
+#setwd("/Users/lakeman/Desktop/R Data Wrangling & Visualisation")
+#write_csv(content_analysis, "content_analysis_engtest.csv")
+#content_analysis_test <- read.csv("content_analysis_engtest.csv")
+
+#write to rds file
+#write_rds(content_analysis, "content_analysis_engtest.rds")
+#content_analysis_rds <- read_rds(content_analysis, "content_analysis_engtest.rds")
+
 
 ```
 
