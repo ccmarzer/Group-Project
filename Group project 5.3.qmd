@@ -112,8 +112,6 @@ content_analysis <- content_analysis|> rename(
 #write to rds file
 #write_rds(content_analysis, "content_analysis_engtest.rds")
 #content_analysis_rds <- read_rds(content_analysis, "content_analysis_engtest.rds")
-
-
 ```
 
 ### **Tidying the data**
