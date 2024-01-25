@@ -68,8 +68,6 @@ responders <- read_csv("Responders2009.csv", show_col_types = FALSE)
 
 content_analysis_eng1 <- read.csv("content_analysis_eng.csv")
 content_analysis_eng2 <- read_rds("content_analysis_eng.rds")
-
-
 ```
 
 ### **Translate the text.**
