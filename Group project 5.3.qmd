@@ -65,7 +65,11 @@ knitr::opts_knit$set(root.dir = "C:/Users/Mattia aka Mario/Desktop/UvA/Second Ye
 
 debate <- read_csv("Debate 2009.csv", show_col_types = FALSE)
 responders <- read_csv("Responders2009.csv", show_col_types = FALSE)
-content_analysis <- read.csv("Content analysis debate 2009.csv")
+
+content_analysis_eng1 <- read.csv("content_analysis_eng.csv")
+content_analysis_eng2 <- read_rds("content_analysis_eng.rds")
+
+
 ```
 
 ### **Translate the text.**
