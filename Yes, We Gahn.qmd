@@ -1,0 +1,417 @@
+---
+title: "Group Project 5: German Chancelor Candidates Debates"
+author: "Iria Cheng (15136884), Mattia Guarnerio (14350920), Lixin Lakeman (12857890), and Margarita Zervoulakou (14462249)"
+format: docx
+html:
+embed_resources: true
+pdf: default
+docx: default
+editor: visual
+date: now
+eval: true
+echo: false
+warning: false
+---
+
+# *Yes, We Gahn!*
+
+### *Exploring the Most Boring Political Debate in History (Germany, 2009, Merkel versus Steinemeier)*
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Sunday the 13th of September 2009, christian-democratic Chancellor Angela Merkel and her social-democratic rival Frank-Walter Steinmeier engaged in a debate on German television. They exchanged their views on several electoral topics, such as minimum wages and nuclear energy, ahead of the Bundestag elections, set on Sunday the September the 27th, two weeks after the so-called "duel".
+
+The key electoral issue was with which political party Merkel’s CDU/CSU alliance would form a coalition. Would there be another four years of a Grand Coalition, or would the SPD be replaced by the liberal Freie Demokratische Partei (FDP)? Aligning with this situation, the conservatives ran a candidate-centred campaign, mostly ignoring electoral issues, whereas the competing parties all tried to raise several political claims, and especially the social democrats, who focused on economic problems by publishing a *Deutschlandplan*, an alternative plan for Germany.
+
+Source: [*"Merely a Referendum on Chancellor Merkel? Parties, Issues and Candidates in the 2009 German Federal Election"*](https://doi.org/10.1080/09644008.2011.554107) by Harald Schoen, German Politics.
+
+The conservative Christlich Demokratische Union (CDU), and its Bavarian ally, the Christlich Soziale Union (CSU) were polling with a double-digit lead at the time. Their main opponents, the Sozialdemokratische Partei Deutschlands (SPD), had governed with them in a Große Koalition (Great Coalition) for four years. Together with the immediate reactions of several national and regional newspapers, these facts solidly hint at an uninspiring, if not outright boring TV confrontation.
+
+Source: (*"Merkel and Steinmeier TV debate underwhelms voters"*)\[https://www.france24.com/en/20090914-merkel-steinmeier-tv-debate-underwhelms-voters-\] by News Wires, France24.
+
+Confirming her large lead, Angela Merkel comfortably secured a second term as chancellor. Perhaps unsurprisingly, it appears that the debate did not change many opinions among voters, regardless of the opposing centres of attention, corroborating the impressions of pundits, media outlets, and even party members. In this report, we utilise information from the German Longitudinal Election Study (GLES) 2009 to evaluate this dominant "boring duel" narrative. We combine panel, real-time, and content analysis data to illustrate trends and patterns that may, or may not, endorse the idea of Merkel versus Steinemeier being the most boring political debate ever.
+
+## Before continuing, these were the reactions
+
+"It couldn't have been a duel anyway" ✦ *Die Welt*
+
+"The format of a duel is not appropriate to convey political content" ✦ *Sueddeutsche Zeitung*
+
+"Voters \[...\] did not learn a thing in the debate" ✦ *Berliner Zeitung*
+
+"This was not an exciting duel; it was shop talk between the chancellor and her deputy" ✦ *Bild*
+
+"Expectations for the debate were not high in the first place; there was no real verbal sparring, there were no new facts: somehow, they do appear to still like each other" ✦ *Nordsee-Zeitung*
+
+"The two get along well, and that was evident last night" ✦ *General-Anzeiger*
+
+**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
+
+## Research Questions
+
+The four individual research questions formulated with the GLES 2009 data are shown below. We intend to provide a holistic assessment of the debate, focusing on relationships between changes in public opinion and political topics, patterns in narratives/strategies, voting patterns, and voter impressions, and real-time reaction trends among different voter groups.
+
+**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (by age, gender, voting intention, or level of education)?
+
+**Research Question 3:** How do different types of candidate narratives/strategies (acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question 4:** To what extent do viewer reactions during the debate relate to actual voting behaviour?
+
+## First steps
+
+### Install packages and load the necessary libraries
+
+To get started, we need to install and load the packages required for our analysis. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, and visualization.
+
+```{r, include = FALSE}
+# If needed, the user must install the "deeplr" library, and the Github "deeplr" repository via the "devtools" package.
+
+# install.packages("deeplr", source = TRUE)
+# install.packages("devtools")
+# devtools::install_github("zumbov2/deeplr")
+
+library(tidyverse) # Loading the "tidyverse" library for data wrangling, analysis, and visualization...
+library(deeplr) # ...and the "deeplr" library, for translating textual data in German.
+```
+
+### Import data
+
+We can now import data on responders' political behaviour and live reactions during the TV duel, and on the debate's contents and dynamics.
+
+```{r, include = FALSE}
+setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
+
+debate <- read_csv("Debate 2009.csv", show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
+
+responders <- read_csv("Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
+
+content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
+```
+
+### How and why did we translate the text?
+
+The GLES 2009 data sets are only downloadable in German, and none of us speaks any German, so we need to translate at least the content analysis data to better understand the context of the debate and the topics and themes discussed during the televised duel.
+
+We employ the automatic DeepL translator, using a DeepL Pro account. However, this option only allows for limited translation in any given month. Therefore, the code for translating the content analysis data set is de-activated, and provided in comments to make our report replicable.
+
+```{r}
+# Some column names from the responders data set are in German.
+
+# With the rename() function from the "dplyr" package, we can manually translate them into English.
+
+responders <- responders |> rename(
+                     Location = Standort, 
+                     Participation_W1 = Teilnahme1, 
+                     Participation_W2 = Teilnahme2, 
+                     Participation_W3 = Teilnahme3,
+                     Participation_W4 = Teilnahme4
+                     )
+
+# With the rename() function from the "dplyr" package, we can also correct small errors in translating columns that were made by the DeepL Pro software.
+
+content_analysis <- content_analysis |> rename(
+                     Speaker = Participation_W1,
+                     Interrupted = Interupted,
+                     Humor = HUMOR,
+                     Strategy = STRATEGI
+                     )
+
+# The code for the automatic translation is shown below.
+
+# Setting the two key variables we need to translate: textual data (in sentences) from the debate, and themes assigned via content analysis to each sentence.
+
+# var_list = c("THEMA", "TEXT")
+
+# Iterating over the set variable list, to translate the selected fields.
+# for(var in var_list){
+  # content_analysis[, var] = translate2(
+    # text = content_analysis[, var], source_lang = "DE",
+    # target_lang = "EN", auth_key = "[insert key here]")
+  # }
+
+# This task was carried out by group member Lixin Lakeman, so she sets her own working directory inside this chunk.
+
+#setwd("C:/Users/lakeman/Desktop/R Data Wrangling & Visualisation")
+
+# She then saves the translated data set as a .csv file...
+# write_csv(content_analysis, "content_analysis_eng.csv")
+
+# ...and to a .rds file.
+# write_rds(content_analysis, "content_analysis_eng.rds")
+
+# Finally, she eliminates the temporary "var_list" object to keep the environment clean.
+```
+
+## Tidying the data: EveRything in One Place
+
+To conduct our analyses and address our research question, we must organise the GLES 2009 in a consistent way, using a system called **tidy data**. To become tidy, data sets must align with four key interrelated principles:
+
+1.  Each type of case needs its own tibble.\
+2.  Each observation must have its own row\
+3.  Each variable must have its own column.\
+4.  Each value must have its own cell.\
+
+We start by applying the last three principles, by spreading, separating, and gathering "untidy" variables in the GLES 2009 data sets. Then, we split types of cases in different tables, or tibbles. This is because of practical reasons, as we prefer to first operate on the least amount of tibbles.
+
+**Principle two: Each observation must have its own row.**
+
+Each unit of observation or measurement should be represented as a single row in the data set. Data tidied according to this principle is easier to manage, especially when working with repeated observations. By pivoting data sets to longer formats, we repeat information across rows, instead of duplicating it across columns, enhancing possibilities for data merging, reducing redundancy, and simplifying downstream analyses by maintaining a consistent structure.
+
+In the GLES 2009 data sets, this problem occurs in two critical instances. Key values, such as the time of each observation in the live debate data set, and the wave of each observations in the responders data set, are stored in columns.
+
+```{r}
+debate <- debate |>
+  pivot_longer(cols = starts_with("t"),
+               # Selecting all columns that represent second-by-second observations, that always start with "t".
+               names_to = "time_str",
+               # Column names must be pivoted to the single "time_str" column.
+               values_to = "score"
+               # Column values must be pivoted to the single "score" column.
+               ) |>
+  mutate(time_str = str_remove_all(time_str, "^t"),
+         # We leverage the "stringr" package to remove all the "t" characters at the start of each time value (remember that times are currently saved as strings).
+         time_str = str_replace(time_str, "(..)(..)(..)", "\\1:\\2:\\3"),
+         # We then add appropriate ":" separators to each two-by-two group of characters, so as to divide hours, minutes, and seconds.
+         time = as.duration(hms(time_str))
+         # We finally convert time in the string format, first in hours, minutes, and seconds, and then in the more appropriate "lubridate" duration format, representing the debate's duration.
+  )
+
+responders <- responders |>
+  rename_with(~sub("(^[A-D])(.*)", "\\1-\\2", .), matches("^[A-D]")) |>
+  # We leverage the "stringr" package and regular expression to rename all the variable names by adding a "-" separator between the two groups. The first is identified by a starting letter that is either A, B, C, or D, and the second is identified by any number of characters.
+  pivot_longer(
+    # The "stringr" passage is functional to quickly and easily separate the wave names (A, B, C, or D) from the variable names, by the "-" character, when pivoting the tibble.
+    cols = starts_with("A") | starts_with("B") | starts_with("C") | starts_with("D"), # We select any columnn or variable that starts with either A, B, C, or D.
+    names_to = c("Wave", ".value"), # The part before the separator must be assigned to the "Wave" column, storing wave values (A-D), while the part after the separator must remain in its place.
+    names_sep = "-" # We specify the "-" we just added as the separator.
+  ) |>
+  mutate(
+    # We now appropriately rename the wave values, to foster their interpretation.
+    Wave = case_when(
+      Wave == "A" ~ "Wave 1", # "A" is "Wave 1".
+      Wave == "B" ~ "Wave 2", # "B" is "Wave 2".
+      Wave == "C" ~ "Wave 3", # "C" is "Wave 3".
+      Wave == "D" ~ "Wave 4", # "D" is "Wave 4".
+      TRUE ~ Wave # When there is no match, we keep the values as they are.
+    ),
+    
+    # We can then fix one last inconsistency: the variable indicating each respondent's participation in each wave is still split across four columns, because it did not start with an A, B, C, or D.
+    
+    Participation = case_when(
+      
+      # By calling "case_when", we store the split values in one "Participation" column, which takes the value of 1 if the respondent participated to the wave, and the value of 0 if they did not.
+      
+      Wave == "Wave 1" & Participation_W1 == 1 ~ 1,
+      Wave == "Wave 1" & Participation_W1 == 0 ~ 0,
+      
+      Wave == "Wave 2" & Participation_W2 == 1 ~ 1,
+      Wave == "Wave 2" & Participation_W2 == 0 ~ 0,
+      
+      Wave == "Wave 3" & Participation_W3 == 1 ~ 1,
+      Wave == "Wave 3" & Participation_W3 == 0 ~ 0,
+      
+      Wave == "Wave 4" & Participation_W4 == 1 ~ 1,
+      Wave == "Wave 4" & Participation_W4 == 0 ~ 0,
+      
+      TRUE ~ NA # When there is no match, we assign a missing value.
+    )
+  ) |>
+  select(-Participation_W1, -Participation_W2,
+         # We now drop the obsolete participation variables.
+         -Participation_W3, -Participation_W4) |>
+  relocate(Responder, Wave, Participation) # We conclude by relocating the key "Responder", "Wave", and "Participation" variables to the first few column positions in the data set.
+```
+
+**Principle 3: Each variable must have its own column.**
+
+Different types of information should not belong to the same column in a data set. This problem occurs less often than Principle 2, but some variables may exhibit values that should be registered as variables by themselves, especially in governmental data, where data entry is the priority. By pivoting data sets to wider formats, we can appropriately spread information, avoid stacking different types of information in the same columns.
+
+In the GLES 2009 data sets, this problem does not occur. To showcase the principle, we pivot the column storing each full sentence in the content analysis data set (*TEXT*) to a wider format, distributing sentences between six columns, one for each of the six speakers (*Speaker*).
+
+```{r}
+# We pivot the "content_analysis" data set to a wider format, taking the new column names from the values of the "Speaker" column, and the values of each column from the "TEXT" column.
+
+content_analysis <- content_analysis |>
+  pivot_wider(names_from = Speaker, values_from = TEXT)
+
+```
+
+**Principle 4: Each value must have its own cell.**
+
+Variables should not contain more than one piece of information. The main idea is that we should split them into multiple columns. In the GLES 2009 data sets, this problem does not occur.
+
+To showcase the principle, we apply separation to the previously pivoted *time_str* variable in the *responder* data set, which records the time lasted since the start of the debate, in the *hh:mm:ss* format. This variable is untidy, because three types of information are stacked within the same cell, making it inconsistent with the *content_analysis* tibble. With the `separate_wider_delim` function, we split it by the *":"* character into multiple new columns, *hour*, *minute*, and *second*.
+
+```{r}
+debate <- debate |>
+  separate_wider_delim(time_str, delim = ":", # We separate the string into different columns on the ":" delimiter.
+                       names = c("hour", "minute", "second") # We appropriately name the three columns as "hour", "minute", and "second".
+                       ) |>
+  mutate(across(c(hour, minute, second), as.numeric)
+         # We convert the new variables from the string to the numeric format, applying the transformation across the three columns.
+         ) |>
+  relocate(Responder, time) # We conclude by relocating the key "Responder", and "time" variables to the first few column positions in the data set.
+```
+
+## Describing Units
+
+**Principle 1: Each type of case needs its own tibble.**
+
+To determine the type of units, or type of cases, in each table it is necessary to find the primary keys. For the *responders* dataset the primary key is the combination of *responder* and *wave*, which describes responders per wave. For the *debate* dataset, the primary key is the combination of *responder* and *time*, which describes the responder per time unit (second). For the *content_analysis* dataset, the primary key is *Fortlaufende*, which represents a time unit that has been classified as a sentence in the debate.
+
+The code below shows that these primary keys, values given by the combination of these variables, are unique in their respective table. This means that each value only appears once in each dataset.
+
+```{r}
+# For each tibble, we count the number of cases associated to each unique value given by the combination of the variables that constitute the primary key. Then, we only keep all unique values that occur more than once. If the resulting tibbles are empty, then the combination of the reported variables represents the primary key.
+
+responders |> count(Responder, Wave) |> filter(n > 1)
+debate |> count(Responder, time) |> filter(n > 1)
+content_analysis |> count(Fortlaufende) |> filter(n > 1)
+```
+
+In the *debate* and *content_analysis* tables, there is only one type of case: respectively, respondent per time unit (second), and sentence. On the other hand, in the *responders* table, there are two types of cases: respondent per wave, and respondent characteristics that do not vary between waves (over time).
+
+**Splitting the data.**
+
+Information on each different type of case in a data set must be transferred into a separate tibble. The code below creates a new table from the *responders* dataset that contains the responders' time-invariant characteristics.
+
+```{r}
+responders_characteristics <- responders |>
+  select(Responder, "44":"47") |> # We select gender, age, level of education, and employment status.
+  group_by(Responder) |> # We group the data set by responder.
+  slice_head() |> # Since these variables were measured in the first wave only, we must keep only the first observation for each respondent.
+  rename(Gender = "44", Age = "45", Education = "46", Employment = "47") # Since selecting variables with numeric names is inconvenient in the tidyverse, we appropriately rename each of the selected variables.
+  
+```
+
+## Data joining
+
+\[Data joins: Determine the foreign keys of the tables that result from Criteria 1 and 2 and check if all key values have a match in the other table.\]
+
+**Determining the foreign keys and checking matches of key values.**
+
+For the tidied *debate* and *content_analysis* data sets, there is no straightforward foreign key. This is because the level of temporal aggregation of each tidied data set is different. The *debate* data set is aggregated at the temporal level of seconds, while the *content_analysis* data set is aggregated in sentences, comprised by several second-by-second observations.
+
+To link these two data sets, we need to transform the *content_analysis* data set, changing the primary key from `Fortlaufende` to `time` (in seconds). The reason why we prefer to keep this fine-grained level of observation is that second-by-second information on real-time candidate ratings (`score`) will be kept untouched, instead of losing nuance in the information at our disposal by aggregating scores on a sentence level.
+
+```{r}
+content_analysis <- content_analysis |>
+  rowwise() |> # We group the tibble row-wise, to ensure that we specify the right start time and end time for each sentence.
+  mutate(time = list(seq(starttime, endtime, by = 1))) |> # In the new "time" variable, we insert a sequence of integers (representing seconds), expanding from the "starttime" to the "endtime" associated with each row.
+  unnest(time) |> # We unnest the sequences contained in each row of the "time" column across multiple rows, thus effectively pivoting the data set to a longer format, where the primary key is "time".
+  mutate(time = as.duration(time)) |> # The "time" variable is assigned to the more appropriate duration format, from the "lubridate" package.
+  group_by(time) |> # Since every sentence ends on the same second as the start of its next sentence, we group the tibble by "time"...
+  slice_head() |> # ...and we break ties by assigning to the earlier sentence each second associated with more than one sentence.
+  ungroup() |> # We now ungroup the data...
+  relocate(time, Fortlaufende) # ...and conclude by relocating the key "time", and "Fortlaufende" variables to the first few column positions in the data set.
+
+# By applying an anti_join on "time", we show the "time" key values that are not consistent between data set. We only select the "time" variable to foster the resulting tibbles' interpretation.
+
+# Showing key values that are present in "debate", but not in "content_analysis".
+
+anti_join(content_analysis |> select(time), debate |> select(time),
+          by = "time") |>
+  distinct() # We only keep distinct cases in the resulting tibble, to focus the visualization on the distinct key values that are missing.
+
+# Showing key values that are present in "debate", but not in "content_analysis".
+
+anti_join(debate |> select(time), content_analysis |> select(time),
+          by = "time") |>
+  distinct() # We only keep distinct cases in the resulting tibble, to focus the visualization on the distinct key values that are missing.
+```
+
+The foreign key of the tidied *debate* data set is now `time` (in seconds). The `anti_join` function is applied twice, to identify all the unmatched cases. There are three distinct instances where no match is found. Firstly, in the starting 28 seconds of the debate, no sentence was recorded in the *content_analysis* data set. Secondly, at `time` 2769 (seconds), no sentence was recorded in the *content_analysis* data set. Thirdly, at `time` 5794 (seconds), no score was recorded in the *debate* data set. Thus, it is advisable to apply an `inner_join`, so as to only keep second-by-second observations that occur in both data sets.
+
+For the debate and responders data set, the foreign key is 'Responder'. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore the two datasets debate and responders can be joined by this variable.
+
+```{r}
+# We need to fix this, as the responders data set is now way different (Respondent x Wave) and needs to be joined with (Respondent x time).
+
+fkey1 <- debate |> select(Responder)
+
+fkey2 <- responders |> select(Responder)
+
+anti_join(fkey1, fkey2, by = "Responder")
+```
+
+**Determining the types of relations between tables.**
+
+\[Data joins: Determine the type of relation between the tables that result from Criteria 1, 2 and 3: one-to-one, one-to-many, many-to-many. Do this at least for the tables involved in Criterion 2.\]
+
+## Scope of the data
+
+\[A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?\]
+
+A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?
+
+**add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
+
+## Refreshing the Research Questions
+
+The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory!
+
+**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+
+**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
+
+**Research Question 3:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+
+**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+
+## Analysis and Visualization
+
+Briefly introduce the section.
+
+### Research Question 1
+
+Report and briefly present Research Question 1 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+### Research Question 2
+
+Report and briefly present Research Question 2 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+### Research Question 3
+
+Report and briefly present Research Question 3 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+### Research Question 4
+
+Report and briefly present Research Question 4 to the general public.
+
+```{r}
+# Data Wrangling and Visualization.
+
+```
+
+Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+
+## Conclusions
+
+Write a brief conclusion.
