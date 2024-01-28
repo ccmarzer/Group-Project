@@ -80,20 +80,18 @@ debate <- read_csv("Debate 2009.csv", show_col_types = FALSE) # Importing the "D
 responders <- read_csv("Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
 
 content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
-
-?read_csv
 ```
 
 ### How and why did we translate the text?
 
-The GLES 2009 data sets are only downloadable in German, and none of us speaks any German, so we need to translate at least the content analysis data to better understand the context of the debate and the topics and themes discussed during the televised duel.
+The GLES 2009 data sets were in German. To make the content of the data sets and the results interpertable for the project members and also our audience, the content analysis data was transated to English. This was necesarry to better understand the context of the debate and the topics and themes discussed during the televised duel. Translation was done manually with rename(), and automatically with the DeepL translator.
 
-We employ the automatic DeepL translator, using a DeepL Pro account. However, this option only allows for limited translation in any given month. Therefore, the code for translating the content analysis data set is de-activated, and provided in comments to make our report replicable.
+Translation was done with the automatic DeepL translator, using a free trial DeepL Pro account. However, this option only allows for monthly limited translation. Therefore, translation was completed before this project and the content analysis data set in German was replaced by its translated English version. The code for translating is included below to make our report transparant and producible, but de-activated for the reason described above.
 
 ```{r}
 # Some column names from the responders data set are in German.
 
-# With the rename() function from the "dplyr" package, we can manually translate them into English.
+# With the rename() function from the "dplyr" package, we can manually translate the column names from German into English.
 
 responders <- responders |> rename(
                      Location = Standort, 
@@ -116,7 +114,7 @@ content_analysis <- content_analysis |> rename(
 
 # Setting the two key variables we need to translate: textual data (in sentences) from the debate, and themes assigned via content analysis to each sentence.
 
-# var_list = c("THEMA", "TEXT")
+# var_list = c("THEMA", "TEXT", "Interrupted", "MODFRAGE", "Strategy", "VALENZ", "Content", "Character", "Theme", "ZEIT", "POLHAND", "KONKR", "OBJ", "POLEB", "BULA", "GRPDARST", "Humor", "Metaphor", "Scold", "Zahlen", "Lage", "WERTE", "STATISTI", "BEISPIE", "HISTORIE", "ZITAT")
 
 # Iterating over the set variable list, to translate the selected fields.
 # for(var in var_list){
