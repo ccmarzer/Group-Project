@@ -347,25 +347,15 @@ A concise but accurate description of the scope of the data for the general read
 
 **add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
 
-## Refreshing the Research Questions
-
-The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory!
-
-**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
-
-**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (Age, or gender, or voting intention, education group)?
-
-**Research Question 3:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
-
-**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
-
 ## Analysis and Visualization
 
-The author of the visualization of research question 1 is Mattia Guarnerio. The author of the visualization fo research question 2 is Lixin Lakeman. The author of the visualization of research question 3 is Margarita. The author of the visualization of research question 4 is Iria Cheng.
+The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory. Furthermore, the steps in data wrangling that are necessary to answer each question and the visualization are presented and discussed in detail. The author of the visualization of research question one is Mattia Guarnerio. The author of the visualization fo research question two is Lixin Lakeman. The author of the visualization of research question three is Margarita. The author of the visualization of research question four is Iria Cheng.
 
 ### Research Question 1
 
 Report and briefly present Research Question 1 to the general public.
+
+**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
 
 ```{r}
 # Data Wrangling and Visualization.
@@ -381,15 +371,24 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 Report and briefly present Research Question 2 to the general public.
 
 ```{r}
-# Data Wrangling and Visualization.
+# Data Wrangling
 
 ```
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
+```{r}
+#Visualization.
+
+plot2 <- _ |> ggplot(aes(x = , y = ))
+
+```
+
 ### Research Question 3
 
 Report and briefly present Research Question 3 to the general public.
+
+**Research Question 3:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
 
 ```{r}
 # Data Wrangling and Visualization.
@@ -401,6 +400,8 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 ### Research Question 4
 
 Report and briefly present Research Question 4 to the general public.
+
+**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
 
 ```{r}
 # Data Wrangling and Visualization.
