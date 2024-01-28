@@ -70,7 +70,7 @@ library(deeplr) # ...and the "deeplr" library, for translating textual data in G
 
 ### Import data
 
-The GLES data can be imported using the readr package that is part of the tidyverse on responders' political behaviour and live reactions during the TV duel, and on the debate's contents and dynamics.
+The GLES data can be imported using the readr package that is part of the tidyverse. The three tables on responders' political behaviour (responders 2009), their live reactions during the TV duel (Debate 2009), and on the debate's contents and dynamics (content_anaysis_eng) are formatted as a .csv file, and can be imported with the following code.
 
 ```{r, include = FALSE}
 setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
