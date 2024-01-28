@@ -39,6 +39,8 @@ Confirming her large lead, Angela Merkel comfortably secured a second term as ch
 
 This project aims to bring the 'most boring' debate alive through visualizations, which beforehand require data wrangling in R. We work with the GLES 2009 data, a complex dataset that consists of data about the responders, live reactions during the debate, and the content of the debate. First the research questions formulated in response to the complex dataset are presented. After, the four steps for tidying the complex dataset are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the 'tidyverse' package is used to wrangle and visualize the data.
 
+The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures.
+
 ## Research Questions
 
 The four individual research questions formulated with the GLES 2009 data are shown below. We intend to provide a holistic assessment of the debate, focusing on relationships between changes in public opinion and political topics, patterns in narratives/strategies, voting patterns, and voter impressions, and real-time reaction trends among different voter groups.
@@ -55,7 +57,7 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 ### Install packages and load the necessary libraries
 
-To get started, we need to install and load the packages required for our analysis. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, and visualization.
+To get started, the packages required for the analysis should be installed and loaded into the library. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, and visualization.
 
 ```{r, include = FALSE}
 # If needed, the user must install the "deeplr" library, and the Github "deeplr" repository via the "devtools" package.
@@ -70,7 +72,7 @@ library(deeplr) # ...and the "deeplr" library, for translating textual data in G
 
 ### Import data
 
-We can now import data on responders' political behaviour and live reactions during the TV duel, and on the debate's contents and dynamics.
+The GLES data can be imported using the readr package that is part of the tidyverse on responders' political behaviour and live reactions during the TV duel, and on the debate's contents and dynamics.
 
 ```{r, include = FALSE}
 setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
@@ -80,6 +82,8 @@ debate <- read_csv("Debate 2009.csv", show_col_types = FALSE) # Importing the "D
 responders <- read_csv("Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
 
 content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
+
+?read_csv
 ```
 
 ### How and why did we translate the text?
