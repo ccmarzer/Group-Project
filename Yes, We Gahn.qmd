@@ -319,7 +319,6 @@ For the debate and responders data, the foreign key is 'Responder'. The `anti_jo
 
 ```{r}
 # We need to fix this, as the responders data set is now way different (Respondent x Wave) and needs to be joined with (Respondent x time).
-
 anti_join(debate |> select(Responder), responders |> select(Responder),
           by = "Responder") |>
   distinct()
@@ -332,6 +331,18 @@ anti_join(responders |> select(Responder), debate |> select(Responder),
 **Determining the types of relations between tables.**
 
 \[Data joins: Determine the type of relation between the tables that result from Criteria 1, 2 and 3: one-to-one, one-to-many, many-to-many. Do this at least for the tables involved in Criterion 2.\]
+
+content analysis - debate
+
+content analysis - responders
+
+content analysis - responders characteristics
+
+debate - responders
+
+debate - responders characteristics
+
+responders - responders characteristics
 
 ## Scope of the data
 
