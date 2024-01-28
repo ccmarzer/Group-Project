@@ -15,13 +15,15 @@ warning: false
 
 # *Yes, We Gahn!*
 
-### *Exploring the Most Boring Political Debate in History (Germany, 2009, Merkel versus Steinemeier)*
+### *Exploring the Most Uninspiring Political Debate in History (Germany, 2009, Merkel versus Steinemeier)*
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Introduction
+
+*"This was not an exciting duel; it was shop talk between the chancellor and her deputy"* ✦ Bild (2009)
 
 Sunday the 13th of September 2009, christian-democratic Chancellor Angela Merkel and her social-democratic rival Frank-Walter Steinmeier engaged in a debate on German television. They exchanged their views on several electoral topics, such as minimum wages and nuclear energy, ahead of the Bundestag elections, set on Sunday the September the 27th, two weeks after the so-called "duel".
 
@@ -35,21 +37,7 @@ Source: (*"Merkel and Steinmeier TV debate underwhelms voters"*)\[https://www.fr
 
 Confirming her large lead, Angela Merkel comfortably secured a second term as chancellor. Perhaps unsurprisingly, it appears that the debate did not change many opinions among voters, regardless of the opposing centres of attention, corroborating the impressions of pundits, media outlets, and even party members. In this report, we utilise information from the German Longitudinal Election Study (GLES) 2009 to evaluate this dominant "boring duel" narrative. We combine panel, real-time, and content analysis data to illustrate trends and patterns that may, or may not, endorse the idea of Merkel versus Steinemeier being the most boring political debate ever.
 
-## Before continuing, these were the reactions
-
-"It couldn't have been a duel anyway" ✦ *Die Welt*
-
-"The format of a duel is not appropriate to convey political content" ✦ *Sueddeutsche Zeitung*
-
-"Voters \[...\] did not learn a thing in the debate" ✦ *Berliner Zeitung*
-
-"This was not an exciting duel; it was shop talk between the chancellor and her deputy" ✦ *Bild*
-
-"Expectations for the debate were not high in the first place; there was no real verbal sparring, there were no new facts: somehow, they do appear to still like each other" ✦ *Nordsee-Zeitung*
-
-"The two get along well, and that was evident last night" ✦ *General-Anzeiger*
-
-**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
+This project aims to bring the 'most boring' debate alive through visualizations, which beforehand require data wrangling in R. We work with the GLES 2009 data, a complex dataset that consists of data about the responders, live reactions during the debate, and the content of the debate. First the research questions formulated in response to the complex dataset are presented. After, the four steps for tidying the complex dataset are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the 'tidyverse' package is used to wrangle and visualize the data.
 
 ## Research Questions
 
@@ -77,7 +65,7 @@ To get started, we need to install and load the packages required for our analys
 # devtools::install_github("zumbov2/deeplr")
 
 library(tidyverse) # Loading the "tidyverse" library for data wrangling, analysis, and visualization...
-library(deeplr) # ...and the "deeplr" library, for translating textual data in German.
+library(deeplr) # ...and the "deeplr" library, for translating textual data in German with DeepL.
 ```
 
 ### Import data
@@ -366,7 +354,7 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 ## Analysis and Visualization
 
-Briefly introduce the section.
+The author of the visualization of research question 1 is Mattia Guarnerio. The author of the visualization fo research question 2 is Lixin Lakeman. The author of the visualization of research question 3 is Margarita. The author of the visualization of research question 4 is Iria Cheng.
 
 ### Research Question 1
 
@@ -380,6 +368,8 @@ Report and briefly present Research Question 1 to the general public.
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
 ### Research Question 2
+
+\- by Lixin Lakeman
 
 Report and briefly present Research Question 2 to the general public.
 
@@ -415,3 +405,27 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 ## Conclusions
 
 Write a brief conclusion.
+
+## Literature
+
+Hadley Wickham, Mine Cetinkaya-Rundel, Garret Grolemund (2023). *R for Data Science (2nd Edition): Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media, ISBN: 9781492097402.
+
+**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
+
+## NOTES! (deleting this before handing in)
+
+## Before continuing, these were the reactions
+
+"It couldn't have been a duel anyway" ✦ *Die Welt*
+
+"The format of a duel is not appropriate to convey political content" ✦ *Sueddeutsche Zeitung*
+
+"Voters \[...\] did not learn a thing in the debate" ✦ *Berliner Zeitung*
+
+"This was not an exciting duel; it was shop talk between the chancellor and her deputy" ✦ *Bild*
+
+"Expectations for the debate were not high in the first place; there was no real verbal sparring, there were no new facts: somehow, they do appear to still like each other" ✦ *Nordsee-Zeitung*
+
+"The two get along well, and that was evident last night" ✦ *General-Anzeiger*
+
+**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
