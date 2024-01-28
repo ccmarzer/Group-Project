@@ -275,12 +275,11 @@ responders_characteristics <- responders |>
   group_by(Responder) |> # We group the data set by responder.
   slice_head() |> # Since these variables were measured in the first wave only, we must keep only the first observation for each respondent.
   rename(Gender = "44", Age = "45", Education = "46", Employment = "47") # Since selecting variables with numeric names is inconvenient in the tidyverse, we appropriately rename each of the selected variables.
-  
 ```
 
 ## Data joining
 
-\[Data joins: Determine the foreign keys of the tables that result from Criteria 1 and 2 and check if all key values have a match in the other table.\]
+Joining the data is done with the dplyr package. However, the foreign keys need to be determined first.
 
 **Determining the foreign keys and checking matches of key values.**
 
@@ -316,16 +315,18 @@ anti_join(debate |> select(time), content_analysis |> select(time),
 
 The foreign key of the tidied *debate* data set is now `time` (in seconds). The `anti_join` function is applied twice, to identify all the unmatched cases. There are three distinct instances where no match is found. Firstly, in the starting 28 seconds of the debate, no sentence was recorded in the *content_analysis* data set. Secondly, at `time` 2769 (seconds), no sentence was recorded in the *content_analysis* data set. Thirdly, at `time` 5794 (seconds), no score was recorded in the *debate* data set. Thus, it is advisable to apply an `inner_join`, so as to only keep second-by-second observations that occur in both data sets.
 
-For the debate and responders data set, the foreign key is 'Responder'. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore the two datasets debate and responders can be joined by this variable.
+For the debate and responders data, the foreign key is 'Responder'. The `anti_join` function is applied twice, to identify all the unmatched cases. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set, and vice versa. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore, the debate and responders data can be joined by this variable.
 
 ```{r}
 # We need to fix this, as the responders data set is now way different (Respondent x Wave) and needs to be joined with (Respondent x time).
 
-fkey1 <- debate |> select(Responder)
+anti_join(debate |> select(Responder), responders |> select(Responder),
+          by = "Responder") |>
+  distinct()
 
-fkey2 <- responders |> select(Responder)
-
-anti_join(fkey1, fkey2, by = "Responder")
+anti_join(responders |> select(Responder), debate |> select(Responder),
+          by = "Responder") |>
+  distinct()
 ```
 
 **Determining the types of relations between tables.**
