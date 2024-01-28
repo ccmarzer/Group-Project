@@ -318,7 +318,6 @@ The foreign key of the tidied *debate* data set is now `time` (in seconds). The 
 For the debate and responders data, the foreign key is 'Responder'. The `anti_join` function is applied twice, to identify all the unmatched cases. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set, and vice versa. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore, the debate and responders data can be joined by this variable.
 
 ```{r}
-# We need to fix this, as the responders data set is now way different (Respondent x Wave) and needs to be joined with (Respondent x time).
 anti_join(debate |> select(Responder), responders |> select(Responder),
           by = "Responder") |>
   distinct()
@@ -330,19 +329,15 @@ anti_join(responders |> select(Responder), debate |> select(Responder),
 
 **Determining the types of relations between tables.**
 
-\[Data joins: Determine the type of relation between the tables that result from Criteria 1, 2 and 3: one-to-one, one-to-many, many-to-many. Do this at least for the tables involved in Criterion 2.\]
+The content analysis and debate tables have a one-to-many relationship. The time variable represented in seconds in the content analysis are unique. The debate table has a time unit variable for every responder. So each time unit (in seconds) in the content analysis data (N = 5466), is related to multiple time units in the debate table. Making it a one-to-many relationship.
 
-content analysis - debate
+The responders characteristics and debate tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple records of the time variable (in seconds) in the debate data.
 
-content analysis - responders
+The responders characteristics and responders tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple waves (four waves) in the responders table.
 
-content analysis - responders characteristics
+content analysis - responders?
 
-debate - responders
-
-debate - responders characteristics
-
-responders - responders characteristics
+content analysis - responders characteristics?
 
 ## Scope of the data
 
