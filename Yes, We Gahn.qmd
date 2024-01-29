@@ -368,20 +368,68 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-Report and briefly present Research Question 2 to the general public.
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups by (age, gender, voting intention, or level of education)?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by \[insert group\] as group characteristics.To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the characteristics from the respondents from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The independent is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variable \[insert group\].
+
+#### Data merging
 
 ```{r}
-# Data Wrangling
+df_lx <- left_join(responders_characteristics |> 
+                     select(Responder, Gender, Age, Education, Employment), 
+                   debate |> 
+                     select(Responder, time, hour, minute, second, score),
+                   by = "Responder") |> 
+  distinct()
+```
+
+#### Counting missing values
+
+```{r}
+df_lx |> summarize(Gender_NA = sum(Gender == 99)) |> filter(Gender_NA > 0)
+df_lx |> summarize(score_NA = sum(is.na(score))) |> filter(score_NA > 0) |> arrange(desc(score_NA))
+
+#remove NA with listwise deletion
+df_lx_clean <- df_lx |> filter(!is.na(score), (Gender < 99))
+
+#df_lx |> group_by(Responder) |> summarize(Gender_NA = sum(Gender == 99), Employment_NA = sum(Employment == 99), Education = sum(Education == 99))
+#df_lx |> summarize(time_NA = sum(is.na(time)), Responder_NA = sum(is.na(Responder)), Gender_NA = sum(is.na(Gender))) 
 
 ```
+
+#### Recoding and regrouping
+
+```{r}
+df_lx_clean <- df_lx_clean |> 
+  mutate(score_rc = case_when (
+    score == 1 ~ 0,
+    score == 2 ~ 1,
+    score == 3 ~ 2,
+    score == 4 ~ 3,
+    score == 5 ~ 4,
+    score == 6 ~ 5,
+    score == 7 ~ 6))
+
+# Calculate the average opinions for each time point
+df_lx_clean <- df_lx_clean |> group_by(time) |> mutate(score_avg_time = mean(score_rc))
+```
+
+#### Visualization
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
 ```{r}
 #Visualization.
-
-plot2 <- _ |> ggplot(aes(x = , y = ))
-
+#basic plot
+df_lx_clean |> mutate(Gender_rc = case_when(
+  Gender == 1 ~ "Male",
+  Gender == 2 ~ "Female"
+)) |> 
+ggplot(aes(x = time, y = score_avg_time, group = Gender_rc)) +
+  geom_line(size = 0.5) +
+  facet_wrap(~Gender_rc) +
+  labs(title = "Average Change in Opinions Over Time",
+       x = "Live Debate (in seconds)",
+       y = "Opinions",
+       color = "Merkel-Steinmeier Scale")
 ```
 
 ### Research Question 3
