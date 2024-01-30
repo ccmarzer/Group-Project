@@ -419,17 +419,30 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 ```{r}
 #Visualization.
 #basic plot
-df_lx_clean |> mutate(Gender_rc = case_when(
-  Gender == 1 ~ "Male",
-  Gender == 2 ~ "Female"
-)) |> 
-ggplot(aes(x = time, y = score_avg_time, group = Gender_rc)) +
-  geom_line(size = 0.5) +
-  facet_wrap(~Gender_rc) +
-  labs(title = "Average Change in Opinions Over Time",
+#new: geom_smooth
+df_lx_clean |> 
+  mutate(Gender_rc = case_when(
+    Gender == 1 ~ "Male",
+    Gender == 2 ~ "Female"),
+    Age_rc = case_when(
+  Age > 18 & Age < 29 ~ "Young Adults (18-28yrs)",
+  Age > 28 & Age < 41 ~ "Adults (29-40yrs)",
+  Age > 41 & Age < 61 ~ "Middle aged (41-60yrs)",
+  Age > 60 ~ "Senior (60+)"
+  )) |> 
+ggplot(aes(x = time, y = score_avg_time, group = Gender_rc, color = Gender_rc)) +
+  geom_smooth(linewidth = 0.5) +
+  scale_x_time() +
+  facet_wrap(~Age_rc) +
+  labs(title = "Voters Opinion to Steinmeier versus Merkel",
+       subtitle = "Avarage Reactions During the Live Debate by Gender",
+       caption = "Data: GLES 2009",
        x = "Live Debate (in seconds)",
        y = "Opinions",
-       color = "Merkel-Steinmeier Scale")
+       color = "Gender") +
+  theme_bw() +
+  theme(legend.position = "bottom") 
+
 ```
 
 ### Research Question 3
