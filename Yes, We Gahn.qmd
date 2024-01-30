@@ -388,11 +388,7 @@ df_lx |> summarize(Gender_NA = sum(Gender == 99)) |> filter(Gender_NA > 0)
 df_lx |> summarize(score_NA = sum(is.na(score))) |> filter(score_NA > 0) |> arrange(desc(score_NA))
 
 #remove NA with listwise deletion
-df_lx_clean <- df_lx |> filter(!is.na(score), (Gender < 99))
-
-#df_lx |> group_by(Responder) |> summarize(Gender_NA = sum(Gender == 99), Employment_NA = sum(Employment == 99), Education = sum(Education == 99))
-#df_lx |> summarize(time_NA = sum(is.na(time)), Responder_NA = sum(is.na(Responder)), Gender_NA = sum(is.na(Gender))) 
-
+df_lx_clean <- df_lx |> filter(!is.na(score), (Gender != 99), (Age != 99))
 ```
 
 #### Recoding and regrouping
