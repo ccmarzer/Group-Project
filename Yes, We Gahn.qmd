@@ -368,7 +368,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups by (age, gender, voting intention, or level of education)?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by \[insert group\] as group characteristics.To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the characteristics from the respondents from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The independent is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variable \[insert group\].
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (by age, gender)?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
 
 #### Data merging
 
@@ -382,8 +382,6 @@ df_lx <- left_join(responders_characteristics |>
 ```
 
 #### Visualization
-
-Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
 ```{r}
 #Visualization.
@@ -424,15 +422,14 @@ plot_lixin <- df_lx |>
             "Senior (60+)"))|> 
   group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
 ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = as.factor(Gender_rc))) +
-  geom_jitter(size = 0.5) +
   geom_smooth(linewidth = 1, se = FALSE) +
   scale_x_time() +
   facet_wrap(~Age_rc) +
   labs(title = "Voters' Opinion to Steinmeier versus Merkel",
        subtitle = "Average Reactions During the Live Debate by Age and Gender",
        caption = "Data: GLES 2009",
-       x = "Live Debate (in seconds)",
-       y = "Opinions",
+       x = "Live Debate (in H:M:S",
+       y = "Opinion Scale",
        color = "Gender") +
   theme_bw() +
   theme(legend.position = "bottom") 
