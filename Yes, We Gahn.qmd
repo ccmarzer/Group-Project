@@ -428,8 +428,8 @@ ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = a
   labs(title = "Voters' Opinion to Steinmeier versus Merkel",
        subtitle = "Average Reactions During the Live Debate by Age and Gender",
        caption = "Data: GLES 2009",
-       x = "Live Debate (in H:M:S)",
-       y = "Opinion Scale",
+       x = "Progression Live Debate",
+       y = "Steinmeier-Merkel Scale",
        color = "Gender") +
   theme_bw() +
   theme(legend.position = "bottom",
