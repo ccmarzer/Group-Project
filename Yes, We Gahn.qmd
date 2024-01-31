@@ -331,13 +331,11 @@ anti_join(responders |> select(Responder), debate |> select(Responder),
 
 The content analysis and debate tables have a one-to-many relationship. The time variable represented in seconds in the content analysis are unique. The debate table has a time unit variable for every responder. So each time unit (in seconds) in the content analysis data (N = 5466), is related to multiple time units in the debate table. Making it a one-to-many relationship.
 
+The responders and debate tables have a many-to-many relationship. In the responder table, for every responder there are four rows/cases that each represent a wave. Therefore multiple units, reponder ID are related to multiple units in the debate table. Making this a many-to-many relationship.
+
 The responders characteristics and debate tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple records of the time variable (in seconds) in the debate data.
 
 The responders characteristics and responders tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple waves (four waves) in the responders table.
-
-content analysis - responders?
-
-content analysis - responders characteristics?
 
 ## Scope of the data
 
