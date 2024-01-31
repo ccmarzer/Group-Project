@@ -420,17 +420,26 @@ plot_lixin <- df_lx |>
             "Senior (60+)"))|> 
   group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
 ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = as.factor(Gender_rc))) +
-  geom_smooth(linewidth = 1, se = FALSE) +
+  geom_smooth(linewidth = 2.5, se = FALSE) + 
+  scale_color_manual(values = c("purple", "orange")) +
+  geom_hline(yintercept = 3, linetype = "dashed", color = "chartreuse2", linewidth = 1.8) +
   scale_x_time() +
   facet_wrap(~Age_rc) +
   labs(title = "Voters' Opinion to Steinmeier versus Merkel",
        subtitle = "Average Reactions During the Live Debate by Age and Gender",
        caption = "Data: GLES 2009",
-       x = "Live Debate (in H:M:S",
+       x = "Live Debate (in H:M:S)",
        y = "Opinion Scale",
        color = "Gender") +
   theme_bw() +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom",
+          plot.background = element_rect(
+    fill = "aliceblue",
+    colour = "black",
+    linewidth = 1),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "italic"),
+    strip.text.x = element_text(size = 13, face = "bold")) 
 plot_lixin
 ```
 
