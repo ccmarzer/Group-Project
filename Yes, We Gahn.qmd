@@ -45,7 +45,7 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 **Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
 
-**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (by age, gender, voting intention, or level of education)?
+**Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different age groups and by gender?
 
 **Research Question 3:** How do different types of candidate narratives/strategies (acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
 
@@ -366,7 +366,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different voter groups (by age, gender)?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different age groups and by gender?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
 
 #### Data merging
 
@@ -420,7 +420,7 @@ plot_lixin <- df_lx |>
             "Senior (60+)"))|> 
   group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
 ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = as.factor(Gender_rc))) +
-  geom_smooth(linewidth = 2.5, se = FALSE) + 
+  geom_smooth(linewidth = 2, se = FALSE) + 
   scale_color_manual(values = c("purple", "orange")) +
   geom_hline(yintercept = 3, linetype = "dashed", color = "chartreuse2", linewidth = 1.8) +
   scale_x_time() +
@@ -428,18 +428,23 @@ ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = a
   labs(title = "Voters' Opinion to Steinmeier versus Merkel",
        subtitle = "Average Reactions During the Live Debate by Age and Gender",
        caption = "Data: GLES 2009",
-       x = "Progression Live Debate",
+       x = "Progression Live Debate (in H:M:S)",
        y = "Steinmeier-Merkel Scale",
        color = "Gender") +
   theme_bw() +
   theme(legend.position = "bottom",
-          plot.background = element_rect(
-    fill = "aliceblue",
-    colour = "black",
-    linewidth = 1),
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(face = "italic"),
-    strip.text.x = element_text(size = 12, face = "bold")) 
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 12, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)),
+    legend.text = element_text(size = 12),
+    strip.background = element_rect(fill = c("darkseagreen1"), color = "black", linewidth = 0.7),
+    strip.text.x = element_text(size = 11, face = "bold"),
+    axis.text = element_text(size = 10, color = "black"),
+    axis.title.x = element_text(vjust = -2),
+    axis.title.y=element_text(angle=90, vjust= 3),
+    panel.grid.major = element_line(color = "gray80"),
+    panel.grid.minor = element_line(color = "gray80"),
+    panel.background = element_rect(fill = "white", color = "black", linewidth = 0.7),
+    panel.spacing = unit(1, "lines"))
 plot_lixin
 ```
 
