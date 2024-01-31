@@ -439,7 +439,7 @@ ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = a
     linewidth = 1),
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(face = "italic"),
-    strip.text.x = element_text(size = 13, face = "bold")) 
+    strip.text.x = element_text(size = 12, face = "bold")) 
 plot_lixin
 ```
 
