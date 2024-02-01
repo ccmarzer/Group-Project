@@ -366,7 +366,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different genders within different age groups?" This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different genders within different age groups?" This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel (0) and good impression of Steinmeier (6) during the debate on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
 
 #### Data merging
 
@@ -384,8 +384,10 @@ df_lx <- left_join(responders_characteristics |>
 ```{r}
 #|label: fig-plot_lixin
 #|fig-cap: a figure about Avarage Reactions During the Live Debate by Age and Gender.
+#|fig-height: 8 
+#|fig-width: 11
 
-plot_lixin <- df_lx |> 
+df_lx |> 
   filter(
     !is.na(score), 
     (Gender != 99), 
@@ -416,11 +418,12 @@ plot_lixin <- df_lx |>
             "Middle Aged (41-60yrs)",
             "Senior (60+)"))|> 
   group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
-ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = as.factor(Gender_rc))) +
+ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype = as.factor(Gender_rc))) +
   geom_smooth(method = "gam", linewidth = 2, se = FALSE) + 
   scale_color_manual(values = c("purple", "orange")) +
-  geom_hline(yintercept = 3, linetype = "dashed", color = "chartreuse2", linewidth = 1.80) +
-  annotate("text", x = 4776, y = 2.95, label = "Neutral", color = "chartreuse2") +
+  scale_linetype_manual(values = c("longdash", "twodash")) +
+  geom_hline(yintercept = 3, color = "gray55", linewidth = 1) +
+  annotate("text", x = 4776, y = 2.95, label = "Neutral", color = "gray55") +
   scale_x_time() +
   facet_wrap(~Age_rc) +
   labs(title = "Voters' Impression of Steinmeier versus Merkel",
@@ -428,15 +431,16 @@ ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = a
        caption = c("Data: GLES 2009", "Young-adults(n= 428293), Adults(n= 230506), Middle-aged(n= 357058), Senior(n= 181190)"),
        x = "Time Live Debate",
        y = "Steinmeier (0) vs. Merkel (6)",
-       color = "Gender") +
+       color = "Gender",
+       linetype = "Gender") +
   theme_bw() +
   theme(legend.position = "bottom",
     plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 11, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)),
-    plot.caption = element_text(hjust = c(1, 0), size = 6),
+    plot.caption = element_text(hjust = c(1, 0), size = 7),
     legend.text = element_text(size = 10),
-    strip.background = element_rect(fill = c("darkseagreen1"), color = "black", linewidth = 0.7),
-    strip.text.x = element_text(size = 10, face = "bold"),
+    strip.background = element_rect(fill = c("slategray1"), color = "black", linewidth = 0.7),
+    strip.text.x = element_text(size = 10),
     axis.text = element_text(size = 10, color = "black"),
     axis.title.x = element_text(vjust = -2),
     axis.title.y=element_text(angle=90, vjust= 3),
@@ -444,8 +448,10 @@ ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = a
     panel.grid.minor = element_line(color = "gray80"),
     panel.background = element_rect(fill = "white", color = "black", linewidth = 0.7),
     panel.spacing = unit(1, "lines"))
-plot_lixin
+
 ```
+
+The figure above shows the average live impressions regarding Steinmeier and Merkel during the entire live debate. It shows the averages per four age groups (young adults, adults, middle-aged and senor responders), and within each age group a distinction between female and male voters is made. As the figure shows, there is not a lot of difference between the age groups. All four age groups are close to the gray solid reference line, which represents a neutral impression of both Steinmeier and Merkel. Within the age groups, there are some differences between male and female responders. If you look at the young adults, you can see that throughout the entire debate, female responders on avarage are above the neutral line, and thus have a better impression of Merkel. The young adult male responders are on average below the neutral score and thus have a better impression of Steinmeier. However, both young-adult females and males follow the same trend: the first 10 minutes of the debate their they have a more positive impression of Merkel, and from minute 10 to 20 they have a more positive impression of Steinmeier. This is followed by a similar pattern over minute 20 to 30, and 30 to 40. A bit after 40 minutes of the debate, until one hour and 10 minutes into the debate both males and females have a more positive impression of Merkel.
 
 ### Research Question 3
 
