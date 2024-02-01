@@ -329,6 +329,8 @@ anti_join(responders |> select(Responder), debate |> select(Responder),
 
 **Determining the types of relations between tables.**
 
+When joining the data, it is important to understand the types of relations between the tables. There are three types of relationships possible. A one-to-one relationship is when a record in one table is related to one record in another table. A one-to-many relationship is when a record in one table is related to many records in another table. A many-to-many relationship is when multiple records in one table are related to multiple records in another table.
+
 The content analysis and debate tables have a one-to-many relationship. The time variable represented in seconds in the content analysis are unique. The debate table has a time unit variable for every responder. So each time unit (in seconds) in the content analysis data (N = 5466), is related to multiple time units in the debate table. Making it a one-to-many relationship.
 
 The responders and debate tables have a many-to-many relationship. In the responders table, a responders is measured in multiple waves. Another way of describing this is that a single wave includes multiple responders. Additionally, in the debate table, a responder is measured in multiple time units (seconds), or in other words, one time unit includes multiple responders. Therefore, multiple responders are related to multiple responders in the debate table. Making this a many-to-many relationship.
