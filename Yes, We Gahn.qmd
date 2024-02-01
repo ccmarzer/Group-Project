@@ -366,7 +366,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different genders within different age groups?" This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel (0) and good impression of Steinmeier (6) during the debate on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate by different age groups and by gender?" This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel and Steinmeier during the debate on a 6-point Likert-scale. This is a relative scale, so a very good impression of Steinmeier is a very bad impression of Merkel (0, and vice versa, a very good impression of Merkel is a very bad impression of Steinmeier (6). The middle of the scale is a Neutral (6) impression. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
 
 #### Data merging
 
@@ -408,16 +408,23 @@ df_lx |>
     )) |> 
   mutate(Age_rc = as_factor(Age)) |>
   mutate(Age_rc = fct_collapse(Age_rc,
-  "Young Adults (18-28yrs)" = c("18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"),
-  "Adults (29-40yrs)" = c("29", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40"),
-  "Middle Aged (41-60yrs)" = c("41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "60"),
-  "Senior (60+)" = c("61", "62", "63", "65", "66", "67", "68", "69", "70", "71", "72", "73", "75", "76", "82")
+  "Young Adults (18-28yrs)" = c(
+    "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"),
+  "Adults (29-40yrs)" = c(
+    "29", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40"),
+  "Middle Aged (41-60yrs)" = c(
+    "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "60"),
+  "Senior (60+)" = c(
+    "61", "62", "63", "65", "66", "67", "68", "69", "70", "71", "72", "73", "75", "76", "82")
   )) |> mutate(Age_rc = fct_relevel(Age_rc,
             "Young Adults (18-28yrs)",
             "Adults (29-40yrs)",
             "Middle Aged (41-60yrs)",
             "Senior (60+)"))|> 
-  group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
+  group_by(
+    time, Age_rc, Gender_rc) |> 
+  mutate(
+    score_avg_time = mean(score_rc)) |> 
 ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype = as.factor(Gender_rc))) +
   geom_smooth(method = "gam", linewidth = 2, se = FALSE) + 
   scale_color_manual(values = c("purple", "orange")) +
@@ -451,7 +458,13 @@ ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype 
 
 ```
 
-The figure above shows the average live impressions regarding Steinmeier and Merkel during the entire live debate. It shows the averages per four age groups (young adults, adults, middle-aged and senor responders), and within each age group a distinction between female and male voters is made. As the figure shows, there is not a lot of difference between the age groups. All four age groups are close to the gray solid reference line, which represents a neutral impression of both Steinmeier and Merkel. Within the age groups, there are some differences between male and female responders. If you look at the young adults, you can see that throughout the entire debate, female responders on avarage are above the neutral line, and thus have a better impression of Merkel. The young adult male responders are on average below the neutral score and thus have a better impression of Steinmeier. However, both young-adult females and males follow the same trend: the first 10 minutes of the debate their they have a more positive impression of Merkel, and from minute 10 to 20 they have a more positive impression of Steinmeier. This is followed by a similar pattern over minute 20 to 30, and 30 to 40. A bit after 40 minutes of the debate, until one hour and 10 minutes into the debate both males and females have a more positive impression of Merkel.
+The figure above shows the average live impressions regarding Steinmeier and Merkel during the entire live debate. It visualizes the average impressions per four age groups (young adults, adults, middle-aged and senor), and within each age group a distinction between female and male responders is made. As the figure shows, there is not a lot of difference between the age groups and within the groups between males and females. In all four age groups, males and females are close to the gray solid reference line, which represents a neutral impression regarding Steinmeier and Merkel. Except, senior male voters deviate on average more from the neutral line and seem to have a more positive impression of Merkel than others.
+
+Another remarkable difference is between the young adults and the senior voters. If you look at the young adults, you can see that throughout the entire debate, female responders on average are above the neutral line, and thus have a better impression of Merkel. The young adult male responders are on average below the neutral score and thus have a better impression of Steinmeier. In the senior age group, this is opposite. Senior male responders, on average have a more positive impression of Merkel, while female responders have a more positive impression of Steinmeier.
+
+However, both young-adult females and males follow the same trend: the first 10 minutes of the debate their they have a more positive impression of Merkel, and from minute 10 to 20 they have a more positive impression of Steinmeier. This is followed by a similar pattern over minute 20 to 30, and 30 to 40. A bit after 40 minutes of the debate, until one hour and 10 minutes into the debate both males and females have a more positive impression of Merkel.
+
+Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it only shows a impression score of 2.7-3.5 while the full scale ranges from 0-6. So in general it can be concluded that the the impressions throughout the debate were quite neutral, and that there are some differences between male and female voters within different age groups, although these differences are quite small.
 
 ### Research Question 3
 
