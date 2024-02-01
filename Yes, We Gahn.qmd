@@ -366,7 +366,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 \- by Lixin Lakeman
 
-To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different age groups and by gender?" This research question aims to explain differences in the changes in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
+To refresh your memory, research question two is "How do the opinions of the voters regarding the candidates change throughout the debate for different genders within different age groups?" This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics. To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative support for Merkel (0) and support for Steinmeier (6) on a 6-point Likert-scale. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age and Gender in which female (1), and male (2).
 
 #### Data merging
 
@@ -382,9 +382,6 @@ df_lx <- left_join(responders_characteristics |>
 #### Visualization
 
 ```{r}
-#Visualization.
-# Plotting using ggplot2
-#basic plot
 #|label: fig-plot_lixin
 #|fig-cap: a figure about Avarage Reactions During the Live Debate by Age and Gender.
 
@@ -420,24 +417,26 @@ plot_lixin <- df_lx |>
             "Senior (60+)"))|> 
   group_by(time, Age_rc, Gender_rc) |> mutate(score_avg_time = mean(score_rc)) |> 
 ggplot(aes(x = time, y = score_avg_time, group = as.factor(Gender_rc), color = as.factor(Gender_rc))) +
-  geom_smooth(linewidth = 2, se = FALSE) + 
+  geom_smooth(method = "gam", linewidth = 2, se = FALSE) + 
   scale_color_manual(values = c("purple", "orange")) +
-  geom_hline(yintercept = 3, linetype = "dashed", color = "chartreuse2", linewidth = 1.8) +
+  geom_hline(yintercept = 3, linetype = "dashed", color = "chartreuse2", linewidth = 1.80) +
+  annotate("text", x = 4776, y = 2.95, label = "Neutral", color = "chartreuse2") +
   scale_x_time() +
   facet_wrap(~Age_rc) +
-  labs(title = "Voters' Opinion to Steinmeier versus Merkel",
+  labs(title = "Voters' Impression of Steinmeier versus Merkel",
        subtitle = "Average Reactions During the Live Debate by Age and Gender",
-       caption = "Data: GLES 2009",
-       x = "Progression Live Debate (in H:M:S)",
-       y = "Steinmeier-Merkel Scale",
+       caption = c("Data: GLES 2009", "Young-adults(n= 428293), Adults(n= 230506), Middle-aged(n= 357058), Senior(n= 181190)"),
+       x = "Time Live Debate",
+       y = "Steinmeier (0) vs. Merkel (6)",
        color = "Gender") +
   theme_bw() +
   theme(legend.position = "bottom",
-    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 12, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)),
-    legend.text = element_text(size = 12),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)),
+    plot.caption = element_text(hjust = c(1, 0), size = 6),
+    legend.text = element_text(size = 10),
     strip.background = element_rect(fill = c("darkseagreen1"), color = "black", linewidth = 0.7),
-    strip.text.x = element_text(size = 11, face = "bold"),
+    strip.text.x = element_text(size = 10, face = "bold"),
     axis.text = element_text(size = 10, color = "black"),
     axis.title.x = element_text(vjust = -2),
     axis.title.y=element_text(angle=90, vjust= 3),
