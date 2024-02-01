@@ -464,7 +464,7 @@ Another remarkable difference is between the young-adults and the senior voters.
 
 Another remarkable thing is that in the young-adult group, both females and males follow the same trend: the first 10 minutes of the debate their they have a more positive impression of Merkel, and from minute 10 to 20 they have a more positive impression of Steinmeier. This is followed by a similar pattern over minute 20 to 30, and 30 to 40. A bit after 40 minutes of the debate, until one hour and 10 minutes into the debate both males and females have a more positive impression of Merkel.
 
-Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it only shows a impression score of 2.7-3.5 while the full scale ranges from 0-6. So in general it can be concluded that the the impressions throughout the debate were quite neutral, and that there are some differences between male and female voters within different age groups, although these differences are quite small.
+Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it only shows a impression score of 2.7-3.5 while the full scale ranges from 0-6. So in general, it can be concluded that the the impressions regarding Steinmeier and Merkel stayed quite neutral throughout the debate. Throughout the debate there are some differences between male and female voters within different age groups, although these differences are quite small.s
 
 ### Research Question 3
 
