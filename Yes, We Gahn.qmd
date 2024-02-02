@@ -1,5 +1,5 @@
 ---
-title: "Group Project 5: German Chancelor Candidates Debates"
+title: "Yes, We Gahn!"
 author: "Iria Cheng (15136884), Mattia Guarnerio (14350920), Lixin Lakeman (12857890), and Margarita Zervoulakou (14462249)"
 format: docx
 html:
@@ -298,7 +298,7 @@ content_analysis <- content_analysis |>
   ungroup() |> # We now ungroup the data...
   relocate(time, Fortlaufende) # ...and conclude by relocating the key "time", and "Fortlaufende" variables to the first few column positions in the data set.
 
-# By applying an anti_join on "time", we show the "time" key values that are not consistent between data set. We only select the "time" variable to foster the resulting tibbles' interpretation.
+# By applying an anti_join on "time", we show the "time" key values that are not consistent between data sets. We only select the "time" variable to foster the resulting tibbles' interpretation.
 
 # Showing key values that are present in "debate", but not in "content_analysis".
 
@@ -318,13 +318,15 @@ The foreign key of the tidied *debate* data set is now `time` (in seconds). The 
 For the debate and responders data, the foreign key is 'Responder'. The `anti_join` function is applied twice, to identify all the unmatched cases. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set, and vice versa. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore, the debate and responders data can be joined by this variable.
 
 ```{r}
+# By applying an anti_join on "Responder", we show the "Responder" key values that are not consistent between data sets. We only select the "Responder" variable to foster the resulting tibbles' interpretation.
+
 anti_join(debate |> select(Responder), responders |> select(Responder),
           by = "Responder") |>
-  distinct()
+  distinct() # We only keep distinct cases in the resulting tibble, to focus the visualization on the distinct key values that are missing.
 
 anti_join(responders |> select(Responder), debate |> select(Responder),
           by = "Responder") |>
-  distinct()
+  distinct() # We only keep distinct cases in the resulting tibble, to focus the visualization on the distinct key values that are missing.
 ```
 
 **Determining the types of relations between tables.**
@@ -349,20 +351,218 @@ A concise but accurate description of the scope of the data for the general read
 
 ## Analysis and Visualization
 
-The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory. Furthermore, the steps in data wrangling that are necessary to answer each question and the visualization are presented and discussed in detail. The author of the visualization of research question one is Mattia Guarnerio. The author of the visualization fo research question two is Lixin Lakeman. The author of the visualization of research question three is Margarita. The author of the visualization of research question four is Iria Cheng.
+The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory. Furthermore, the steps in data wrangling that are necessary to answer each question and the visualization are presented and discussed in detail. The author of the visualization of research question one is Mattia Guarnerio. The author of the visualization of research question two is Lixin Lakeman. The author of the visualization of research question three is Margarita. The author of the visualization of research question four is Iria Cheng.
 
 ### Research Question 1
 
-Report and briefly present Research Question 1 to the general public.
-
-**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+**Research Question 1:** In the German electoral debate of 2009, which were the specific electoral topics associated with positive or negative real-time reactions towards, and changes in public opinions on, candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate?
 
 ```{r}
-# Data Wrangling and Visualization.
+#| fig-width: 10
+#| fig-height: 7
+
+# I set the figure's height at 7 inches, and the figure's width at 10 inches, for pretty printing in the knitted document.
+
+responders |> # I start by operating on the tidied "responders" data set.
+  select(Responder, Wave, Participation, "40_01") |>
+  # I only select the four necessary variables: "Responder", "Wave", "Participation", and Merkel's debate performance "40_01".
+  rename(MerkelPerf = "40_01") |>
+  # I rename the "40_01" variable with a more appropriate and meaningful name.
+  filter(Wave %in% c("Wave 1", "Wave 2") & 
+           # I exclude all Wave 3 and Wave 4 observations, in which I am not substantively interested.
+           Participation == 1 & 
+           # I exclude all missing values at the respondent level.
+           !(MerkelPerf %in% c(99, 101, 102))
+           # I exclude all missing values in the "MerkelPerf" variable.
+         ) |>
+  group_by(Responder) |> # I group the data by responder...
+  filter(n_distinct(Wave) == 2) |>
+  # ...and I exclude all responders who did not participate in both Wave 1 and Wave 2.
+  mutate(MerkelPerf_diff = last(MerkelPerf) - first(MerkelPerf)
+         # I calculate the difference between debate performance evaluations (Wave 2) and debate performance expectations (Wave 1).
+         ) |>
+  mutate(MerkelPerf = case_when(
+    MerkelPerf_diff == 0 ~ "Performed neither better nor worse than expected",
+    MerkelPerf_diff > 0 ~ "Performed worse than expected",
+    MerkelPerf_diff < 0 ~ "Performed better than expected",
+    TRUE ~ NA
+    # I then appropriately recode the "MerkelPerf" object as a categorical variable.
+  )) |>
+  ungroup() |> # I ungroup the data...
+  select(-MerkelPerf_diff) |> # ...and drop the now redundant "MerkelPerf_diff" variable.
+  filter(MerkelPerf != "Performed neither better nor worse than expected" & Wave == "Wave 1") |> # I exclude all respondents who did not change their opinion between Wave 1 and Wave 2, and all the now unnecessary observations from Wave 2.
+  group_by(MerkelPerf) |> # I group the data by Merkel's performance evaluation...
+  mutate(n = n(), # ...and count the number of rows within each category.
+    MerkelPerf = paste0(MerkelPerf, " (N = ", n, ")")
+    # I then save the N in the "MerkelPerf" variable to show the number of respondents belonging to each category with facet_wrap.
+    ) |>
+  ungroup() |> # I ungroup the data...
+  select(-n) |> # ...and drop the redundant count of rows grouped by "MerkelPerf".
+  inner_join(debate |> select (Responder, time, score),
+             by = "Responder") |>
+  # I join the resulting "respondents" tibble with the "debate" tibble by the "Responder" ID, selecting only the necessary variables. Since I now only have observations from Wave 1, this becomes a one-to-many join.
+  inner_join(content_analysis |> select(time, Fortlaufende, Theme),
+             by = "time") |>
+  # I join the resulting tibble with the "content_analysis" tibble by "time" (duration in seconds), selecting only the necessary variables. 
+  group_by(Fortlaufende, Responder) |> # I group by sentence and responder...
+  mutate(score = score - 4, # ...and de-mean the real-time reaction score.
+    score_diff = sum(score) # I then sum the second-by-second score within each sentence for each responder.
+    ) |>
+  # I transform this aggregate real-time reaction score in a categorical variable, measuring positive, negative, and neutral reactions.
+  mutate(score = case_when(
+    score_diff > 0 ~ "Positive Real-Time Reaction",
+    score_diff < 0 ~ "Negative Real-Time Reaction",
+    TRUE ~ "No Change"
+  )) |>
+  select(-score_diff, -time) |> # I now exclude the redundant or unnecessary "score_diff" and "time" variables...
+  filter(score != "No Change") |> # ...and drop all cases associated to neutral real-time reactions.
+  slice_head() |> # I can now reduce the temporal granularity of the data from the second-by-second level to the sentence level...
+  ungroup() |> # ...and finally ungroup the data.
+  # I aggregate the substantively meaningful sentence topics in five main categories, and assign the rest to the "TV Duel itself, General, and Miscellaneous" class.
+  mutate(Topic = case_when(
+    Theme %in% c("Labor market policy area",
+                 "Economic/financial crisis specifically",
+                 "Special topic banking crisis (here also bad bank, nationalization, Landesbanken, Hypo",
+                 "Special topic Arcandor (Karstadt-Quelle)",
+                 "State aid/ lending/ guarantees for companies specifically",
+                 "Tax cuts/tax gifts specifically",
+                 "Economic policy area",
+                 "Budget restructuring and consolidation specifically",
+                 "Special topic: economic stimulus packages/ stimulus packages",
+                 "Budget policy in general",
+                 "Special topic Opel",
+                 "Tax policy in general",
+                 "General economic situation") ~ "Economic Policies",
+                 
+    Theme %in% c("Political style/ political culture",
+                 "Special topic: Cooperation between the SPD and Die Linke",
+                 "POLITCS", "Surveys",
+                 "Election programs/government programs of the parties",
+                 "Company car affair (Ulla Schmidt)",
+                 "Bundestag election campaign area",
+                 "Coalitions in general",
+                 "Federal election campaign area",
+                 "Other Politics dimension",
+                 "Personnel proposals for ministerial posts",
+                 "State and local elections and election campaigns",
+                 "State elections and election campaign in Saxony") ~ "Political Culture, Competition, and Cooperation",
+    
+    Theme %in% c("Social policy area",
+                 "East Germany area",
+                 "Agenda 2010/ Hartz IV",
+                 "Unemployment, unemployment figures",
+                 "Special topic manager salaries",
+                 "Wage policy in general",
+                 "Pension special",
+                 "Health policy in general",
+                 "Healthcare reform specifically",
+                 "Minimum wage specifically",
+                 "Family policy in general",
+                 "Education policy area",
+                 "Research policy") ~ "Social, Educational, and Healthcare Policies",
+    
+    Theme %in% c("Special topic: German Armed Forces mission in Afghanistan",
+                 "Terrorism as an international problem/attacks outside Germany",
+                 "Foreign trade/ export") ~ "Security and Foreign Affairs",
+                 
+    Theme %in% c("Alternative/ regenerative (renewable) energy(s) specifically",
+                 "Energy prices (for electricity/ diesel/ gas/ oil/ petrol etc.) specifically",
+                 "Environmental protection/ nature conservation/ animal welfare",
+                 "Special topic nuclear phase-out") ~ "Energy and the Environment",
+                 
+    Theme %in% c("TV duel itself/time accounts",
+                 "Other policy dimension",
+                 "POLICY",
+                 "does not apply") ~ "TV Duel itself, General, and Miscellaneous",
+    
+    TRUE ~ Theme
+  )) |>
+  select(-Theme) |> # I now drop the redundant "Theme" variable...
+  filter(Topic != "TV Duel itself, General, and Miscellaneous") |>
+  # ...and filter the unnecessary ""TV Duel itself, General, and Miscellaneous" category.
+  group_by(MerkelPerf, score, Topic) |>
+  # I can now compute the statistics I intend to show in the plot. First, I group by performance evaluation, type of real-time reaction, and topic...
+  summarize(Count = n(), .groups = "keep") |>
+  # ...and count the number of rows (cases) within each of these groups.
+  ungroup() |> # Second, I ungroup the data...
+  group_by(MerkelPerf, score) |> # ...I re-group it by performance evaluation, and type of real-time reaction...
+  mutate(Percentage = round((Count / sum(Count)) * 100, 2)) |>
+  # ...and calculate the topic distribution within types of reactions, within performance evaluation groups.
+  ungroup() |> # I can now ungroup the data, and proceed to plot it.
+  ggplot(aes(x = score, y = Percentage,
+             # In the ggplot mapping, I specify that:
+             # Types of real-time reactions are mapped on the x-axis.
+             # Percentages of real-time reactions are mapped on the y-axis.
+             fill = fct_reorder(Topic, Percentage, median)
+             # The fill colours of each bar represent the debate topics.
+             # They are reordered by percentage, ascending, so that the highest shares are more easily visualizable on the bottom.
+             )
+         ) +
+  geom_bar(stat = "identity", position = "stack", colour = "black") +
+  # I now add a bar geom, and specify that:
+  # The y-axis statistic ("Percentage") must be plotted as-is.
+  # The bars must be stacked. This is a crucial visualization choice, because this helps comparing the distribution of debate topics side-by-side between each group.
+  # The colour of each bar's border must be black, in order to foster its visualization.
+  geom_text(aes(label = paste0(Percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 2.3) +
+  # I add a text geom, specifying topic percentages within each bar (topic) section.
+  # I adjust the position and size of all texts, showing them in the centre of each bar (topic) section and reducing their size.
+  # This is another crucial visualization decision, because it greatly helps the reader to appreciate the small differences in shares between groups.
+  scale_x_discrete(labels = c("Positive\nReal-Time\nReactions",
+                              "Negative\nReal-Time\nReactions"
+                              )) +
+  # I appropriately re-label the types of real-time reactions, to make it clear that "real-time" negative or positive reactions must be distinguished from negative or positive debate performance evaluations.
+  scale_y_continuous(breaks = seq(0, 100, 5)) +
+  # I increase the number of breaks on the y-axis, because differences in topic distributions between groups are small.
+  scale_fill_manual(values = c("#BABAF2", "#B0E7FC", "#FFC09F",
+                               "#9AFEDE", "#FFADD2")) +
+  # I specify a customized colour palette, to make the black percentages visible and to highlight the contrast between the debate topics and the white background.
+  facet_wrap(~ MerkelPerf, scales = "free_x") +
+  # I now wrap the graph into two facets: one containing real-time reactions from respondents whose evaluations of Merkel's debate were better than their expectations; another containing real-time reactions from respondents whose evaluation of Merkel's debate were worse than their expectations.
+  labs(
+    title = "Distribution of Debate Topics Across Positive\nand Negative Real-Time Reactions to Merkel",
+    subtitle = "Comparing Evaluations of Merkel's Debate Performance",
+    x = "Type of Real-Time Reaction",
+    y = "% of Real-Time Reactions",
+    fill = "Debate Topic",
+    caption = "Data: GLES 2009 (GESIS)"
+    ) +
+  # I specify meaningful labels for the title, subtitle, x-axis, y-axis, fill, and a caption giving credit to the data set and provider.
+  theme_bw() + # I set the black-and-white theme as the default, to highlight the contrast between the debate topics' colours and a white background.
+  # Then, I customize the plot's theme on a fine level.
+  theme(strip.background = element_rect(fill = "#EDFFEC"),
+        # I change each facet title's fill from a darker grey to a brighter hue of white and green...
+        strip.text.x = element_text(size = 10, face = "bold"),
+        # ...so that each black facet title, in bold, can be best visualized on a brighter background.
+        panel.grid.major = element_line("#B7B7CC"),
+        # On the other hand, I specify that all major and minor lines in the panel grid must be of a darker shade of grey, to highlight their contrast with the white background, while avoiding making them as prominent as the bars' black borders.
+        panel.grid.minor = element_line("#B7B7CC"),
+        plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        # I set the title, in bold, to a bigger size than the rest of the plot's text, to highlight its importance, and fine-tune its position.
+        plot.subtitle = element_text(size = 12, face = "italic",
+                                     hjust = 0.5,
+                                     margin = margin(0, 0, 15, 0)),
+        # I execute the same task for the subtitle, making it a bit smaller and in italic rather than bold style, to maintain the title-subtitle hierarchy. I similarly fine-tune its position and margins.
+        legend.title = element_text(face = "italic"),
+        # I italicize and enlarge the legend's title, to distinguish it from the legend's labels.
+        axis.title.x = element_text(face = "italic", size = 10, vjust = -2),
+        # I execute the same task for the axis titles, to distinguish them from the axis labels, adjusting their positions as well.
+        axis.title.y = element_text(face = "italic", size = 10, vjust = 3),
+        panel.spacing = unit(1, "lines")
+        # I finally set the panel spacing, to position the facets closer to each other, to foster an immediate comparison of the topic distributions between groups.
+      )
 
 ```
 
-Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+I leverage the described GLES 2009 data sets to generate bar plots that represent debate topic distributions across positive and negative real-time reactions. Furthermore, I compare between responders that positively, or negatively, evaluated Merkel's performance, based on their pre-TV duel expectations. By looking at the relative prevalence of different topics in each condition, the reader can immediately figure which topics are more or less associated with positive or negative real-time reactions, and with positive or negative assessments of debate performances.
+
+On a first impression, it is evident how most topic distributions do not vary between groups by more than one percentage point. This suggests that changes in public opinions on, and negative or positive real-time reactions towards candidates' debate performances, are not associated with the substantive contents of their statements.
+
+However, by taking a closer look, there seem to be two notable exceptions. First, Merkel's affirmations concerning energy and the environment are generally more prevalent within positive than negative real-time reactions, irrespective of debate performance evaluation. This implies that, while Merkel's stance on these policies was stronger than her opponent's, this advantage did not materialise into more positive debate performance evaluations among German voters.
+
+Second, economic topics are about 3.5% more prevalent in negative real-time reactions amidst German voters who thought that Merkel performed worse than they expected. Yet, this is not the case among respondents who positively assessed Merkel's conduct in the TV duel. This means that Merkel's negative real-time reactions to policy points on the economy were at least part of the reason why some respondents were underwhelmed by Merkel's debate performance.
+
+In sum, the GLES 2009 data indicates that substantive debate topics did not have much of an impact on the German public's real-time reactions and general evaluations of candidates' performances during the TV duel. The only two exceptions are energetic and environmental policies, which generated slightly more positive real-time reactions, but did not sway German voters, and economic policies, which may be part of the reason why some respondents thought Merkel performed worse than they expected during the debate.
 
 ### Research Question 2
 
@@ -502,7 +702,7 @@ Write a brief conclusion.
 
 ## Literature
 
-Hadley Wickham, Mine Cetinkaya-Rundel, Garret Grolemund (2023). *R for Data Science (2nd Edition): Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media, ISBN: 9781492097402.
+Hadley Wickham, Mine Cetinkaya-Rundel, Garret Grolemund (2023). *R for Data Science (2nd Edition): Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media, ISBN: 9781492097402.
 
 **Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
 
