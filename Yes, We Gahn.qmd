@@ -1,9 +1,16 @@
 ---
 title: "Yes, We Gahn!"
-author: "Iria Cheng (15136884), Mattia Guarnerio (14350920), Lixin Lakeman (12857890), and Margarita Zervoulakou (14462249)"
-format: docx
+subtitle: "Exploring the Most Uninspiring Political Debate in History (Germany, 2009, Merkel versus Steinemeier)"
+title-block-banner: "#A31621"
+author:
+  - Iria Cheng, 15136884
+  - Mattia Guarnerio, 14350920
+  - Lixin Lakeman, 12857890
+  - Margarita Zervoulakou, 14462249
+format: html
 toc: true
 toc-location: body
+fig-cap-location: top
 number_sections: true
 embed_resources: true
 pdf: default
@@ -15,15 +22,11 @@ echo: false
 warning: false
 ---
 
-# *Yes, We Gahn!*
-
-### *Exploring the Most Uninspiring Political Debate in History (Germany, 2009, Merkel versus Steinemeier)*
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
+## 1. Introduction
 
 *"This was not an exciting duel; it was shop talk between the chancellor and her deputy"* ✦ Bild (2009)
 
@@ -35,17 +38,17 @@ Source: [*"Merely a Referendum on Chancellor Merkel? Parties, Issues and Candida
 
 The conservative Christlich Demokratische Union (CDU), and its Bavarian ally, the Christlich Soziale Union (CSU) were polling with a double-digit lead at the time. Their main opponents, the Sozialdemokratische Partei Deutschlands (SPD), had governed with them in a Große Koalition (Great Coalition) for four years. Together with the immediate reactions of several national and regional newspapers, these facts solidly hint at an uninspiring, if not outright boring TV confrontation.
 
-Source: (*"Merkel and Steinmeier TV debate underwhelms voters"*)\[https://www.france24.com/en/20090914-merkel-steinmeier-tv-debate-underwhelms-voters-\] by News Wires, France24.
+Source: [*"Merkel and Steinmeier TV debate underwhelms voters"*](https://www.france24.com/en/20090914-merkel-steinmeier-tv-debate-underwhelms-voters-) by News Wires, France24.
 
 Confirming her large lead, Angela Merkel comfortably secured a second term as chancellor. Perhaps unsurprisingly, it appears that the debate did not change many opinions among voters, regardless of the opposing centres of attention, corroborating the impressions of pundits, media outlets, and even party members. In this report, we utilise information from the German Longitudinal Election Study (GLES) 2009 to evaluate this dominant "boring duel" narrative. We combine panel, real-time, and content analysis data to illustrate trends and patterns that may, or may not, endorse the idea of Merkel versus Steinemeier being the most boring political debate ever.
 
-This project aims to bring the 'most boring' debate alive through visualizations, which beforehand require data wrangling in R. We work with the GLES 2009 data, a complex dataset that consists of data about the responders, live reactions during the debate, and the content of the debate. First the research questions formulated in response to the complex dataset are presented. After, the four steps for tidying the complex dataset are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the 'tidyverse' package is used to wrangle and visualize the data. Tidyverse is an opinionated collection of R packages designed for data science. Packages that are part of the tidyverse are: readr, dplyr, tibble, purr, tidyr, for cats, stringr, and ggplot2. All packages share an underlying design philosophy, grammar, and data structures.
+This project aims to bring the "most boring" debate alive through visualizations, which require prior data wrangling in R. We work with the GLES 2009 data, a complex data set that consists of information about the responders, live reactions during the debate, and the TV duel's content. First, the research questions formulated in reference to the complex data set are presented. Then, the steps for tidying the complex data set are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the `tidyverse` package is used to wrangle and visualize the data. `tidyverse` is an opinionated collection of R packages designed for data science. Packages that are part of the `tidyverse` are: `readr`, `dplyr`, `tibble`, `purrr`, `tidyr`, `forcats`, `stringr`, and `ggplot2`. All packages share an underlying design philosophy, grammar, and data structures.
 
-## Research Questions
+## 2. Research Questions
 
 The four individual research questions formulated with the GLES 2009 data are shown below. We intend to provide a holistic assessment of the debate, focusing on relationships between changes in public opinion and political topics, patterns in narratives/strategies, voting patterns, and voter impressions, and real-time reaction trends among different voter groups.
 
-**Research Question 1:** In the German electoral cycle of 2009, which were the specific electoral topics associated with changes in public opinion regarding candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate? Furthermore, are there discernible variations among candidates in terms of the topics that predominantly relate to favorable or unfavorable shifts in public perception?
+**Research Question 1:** In the German electoral debate of 2009, which were the specific electoral topics associated with positive or negative real-time reactions towards, and changes in public opinions on, candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate?
 
 **Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different age groups and by gender?
 
@@ -53,9 +56,9 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 **Research Question 4:** To what extent do viewer reactions during the debate relate to actual voting behaviour?
 
-## First steps
+## 3. First steps
 
-### Install packages and load the necessary libraries
+### 3.1 ✧ Install packages and load the necessary libraries
 
 To get started, the packages required for the analysis should be installed and loaded into the library. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, and visualization.
 
@@ -70,9 +73,9 @@ library(tidyverse) # Loading the "tidyverse" library for data wrangling, analysi
 library(deeplr) # ...and the "deeplr" library, for translating textual data in German with DeepL.
 ```
 
-### Import data
+### 3.2 ✧ Import data
 
-The GLES data can be imported using the readr package that is part of the tidyverse. The three tables on responders' political behaviour (responders 2009), their live reactions during the TV duel (Debate 2009), and on the debate's contents and dynamics (content_anaysis_eng) are formatted as a .csv file, and can be imported with the following code.
+The GLES 2009 data can be imported using the `readr` package that is part of the tidyverse. The three tables on responders' political behaviour (responders 2009), their live reactions during the TV duel (Debate 2009), and on the debate's contents and dynamics (content_anaysis_eng) are formatted as a `.csv` file, and can be imported with the following code.
 
 ```{r, include = FALSE}
 setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
@@ -84,11 +87,11 @@ responders <- read_csv("Responders2009.csv", show_col_types = FALSE) # Importing
 content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
 ```
 
-### How and why did we translate the text?
+### 3.3 ✧ How and why did we translate the text?
 
-The GLES 2009 data sets were in German. To make the content of the data sets and the results interpertable for the project members and also our audience, the content analysis data was transated to English. This was necesarry to better understand the context of the debate and the topics and themes discussed during the televised duel. Translation was done manually with rename(), and automatically with the DeepL translator.
+The GLES 2009 data sets are downloadable in German. To make the content of the data sets and the results interpretable for the project members as well as our audience, the content analysis data was translated to English. This was necessary to better understand the context of the debate, and the topics and themes discussed during the televised duel.
 
-Translation was done with the automatic DeepL translator, using a free trial DeepL Pro account. However, this option only allows for monthly limited translation. Therefore, translation was completed before this project and the content analysis data set in German was replaced by its translated English version. The code for translating is included below to make our report transparant and producible, but de-activated for the reason described above.
+Translation was executed manually with rename(), and automatically with the DeepL translator, using a free trial DeepL Pro account. However, this option only allows for a monthly limited translation. Therefore, translation was completed before the start of this project, and the content analysis data set in German was replaced by its translated English version. The code for automatic translating with DeepL is included below to make our report transparent and reproducible, but de-activated for the reasons described above.
 
 ```{r}
 # Some column names from the responders data set are in German.
@@ -138,7 +141,7 @@ content_analysis <- content_analysis |> rename(
 # Finally, she eliminates the temporary "var_list" object to keep the environment clean.
 ```
 
-## Tidying the data: EveRything in One Place
+## 4. Tidying the data: EveRything in One Place
 
 To conduct our analyses and address our research question, we must organise the GLES 2009 in a consistent way, using a system called **tidy data**. To become tidy, data sets must align with four key interrelated principles:
 
@@ -147,7 +150,7 @@ To conduct our analyses and address our research question, we must organise the 
 3.  Each variable must have its own column.\
 4.  Each value must have its own cell.\
 
-We start by applying the last three principles, by spreading, separating, and gathering "untidy" variables in the GLES 2009 data sets. Then, we split types of cases in different tables, or tibbles. This is because of practical reasons, as we prefer to first operate on the least amount of tibbles.
+We start by applying the last three principles, spreading, separating, and gathering "untidy" variables in the GLES 2009 data sets. Then, we split types of cases in different tables, or tibbles. This is because of practical reasons, as we prefer to first operate on the least amount of tibbles.
 
 **Principle two: Each observation must have its own row.**
 
@@ -220,7 +223,7 @@ responders <- responders |>
 
 **Principle 3: Each variable must have its own column.**
 
-Different types of information should not belong to the same column in a data set. This problem occurs less often than Principle 2, but some variables may exhibit values that should be registered as variables by themselves, especially in governmental data, where data entry is the priority. By pivoting data sets to wider formats, we can appropriately spread information, avoid stacking different types of information in the same columns.
+Different types of information should not belong to the same column in a data set. This problem usually occurs less often than Principle 2, but some variables may exhibit values that should be registered as variables by themselves, especially in governmental data, where data entry is the priority. By pivoting data sets to wider formats, we can appropriately spread information, avoid stacking different types of information in the same columns.
 
 In the GLES 2009 data sets, this problem does not occur. To showcase the principle, we pivot the column storing each full sentence in the content analysis data set (*TEXT*) to a wider format, distributing sentences between six columns, one for each of the six speakers (*Speaker*).
 
@@ -249,13 +252,13 @@ debate <- debate |>
   relocate(Responder, time) # We conclude by relocating the key "Responder", and "time" variables to the first few column positions in the data set.
 ```
 
-## Describing Units
+## 5. Describing Units
 
 **Principle 1: Each type of case needs its own tibble.**
 
-To determine the type of units, or type of cases, in each table it is necessary to find the primary keys. For the *responders* dataset the primary key is the combination of *responder* and *wave*, which describes responders per wave. For the *debate* dataset, the primary key is the combination of *responder* and *time*, which describes the responder per time unit (second). For the *content_analysis* dataset, the primary key is *Fortlaufende*, which represents a time unit that has been classified as a sentence in the debate.
+To determine the type of units, or type of cases, in each table it is necessary to find the primary keys. For the *responders* data set, the primary key is the combination of *responder* and *wave*, which describes responders per wave. For the *debate* dataset, the primary key is the combination of *responder* and *time*, which describes the responder per time unit (second). For the *content_analysis* dataset, the primary key is *Fortlaufende*, which represents a time unit that has been classified as a sentence in the debate.
 
-The code below shows that these primary keys, values given by the combination of these variables, are unique in their respective table. This means that each value only appears once in each dataset.
+The code below shows that these primary keys, values given by the combination of these variables, are unique in their respective table. This means that each value only appears once in each data set.
 
 ```{r}
 # For each tibble, we count the number of cases associated to each unique value given by the combination of the variables that constitute the primary key. Then, we only keep all unique values that occur more than once. If the resulting tibbles are empty, then the combination of the reported variables represents the primary key.
@@ -269,7 +272,7 @@ In the *debate* and *content_analysis* tables, there is only one type of case: r
 
 **Splitting the data.**
 
-Information on each different type of case in a data set must be transferred into a separate tibble. The code below creates a new table from the *responders* dataset that contains the responders' time-invariant characteristics.
+Information on each different type of case in a data set must be transferred into a separate tibble. The code below creates a new table from the *responders* data set that contains the responders' time-invariant characteristics.
 
 ```{r}
 responders_characteristics <- responders |>
@@ -279,7 +282,7 @@ responders_characteristics <- responders |>
   rename(Gender = "44", Age = "45", Education = "46", Employment = "47") # Since selecting variables with numeric names is inconvenient in the tidyverse, we appropriately rename each of the selected variables.
 ```
 
-## Data joining
+## 6. Data joining
 
 Joining the data is done with the dplyr package. However, the foreign keys need to be determined first.
 
@@ -315,9 +318,9 @@ anti_join(debate |> select(time), content_analysis |> select(time),
   distinct() # We only keep distinct cases in the resulting tibble, to focus the visualization on the distinct key values that are missing.
 ```
 
-The foreign key of the tidied *debate* data set is now `time` (in seconds). The `anti_join` function is applied twice, to identify all the unmatched cases. There are three distinct instances where no match is found. Firstly, in the starting 28 seconds of the debate, no sentence was recorded in the *content_analysis* data set. Secondly, at `time` 2769 (seconds), no sentence was recorded in the *content_analysis* data set. Thirdly, at `time` 5794 (seconds), no score was recorded in the *debate* data set. Thus, it is advisable to apply an `inner_join`, so as to only keep second-by-second observations that occur in both data sets.
+The foreign key of the tidied *debate* data set is now *time* (in seconds). The `anti_join` function is applied twice, to identify all the unmatched cases. There are three distinct instances where no match is found. Firstly, in the starting 28 seconds of the debate, no sentence was recorded in the *content_analysis* data set. Secondly, at *time* 2769 (seconds), no sentence was recorded in the *content_analysis* data set. Thirdly, at *time* 5794 (seconds), no score was recorded in the *debate* data set. Thus, it is advisable to apply an *inner_join*, so as to only keep second-by-second observations that occur in both data sets.
 
-For the debate and responders data, the foreign key is 'Responder'. The `anti_join` function is applied twice, to identify all the unmatched cases. The anti_join() function provides a tibble for all cases in the debate data set that do not match in the responders data set, and vice versa. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore, the debate and responders data can be joined by this variable.
+For the debate and responders data, the foreign key is *Responder*. The `anti_join` function is applied twice, to identify all the unmatched cases. The `anti_join` function provides a tibble for all cases in the debate data set that do not match in the responders data set, and vice versa. As you can see, there are no cases that do not match and there are no missing values in the Responder variables. Therefore, the debate and responders data can be joined by this variable.
 
 ```{r}
 # By applying an anti_join on "Responder", we show the "Responder" key values that are not consistent between data sets. We only select the "Responder" variable to foster the resulting tibbles' interpretation.
@@ -333,17 +336,17 @@ anti_join(responders |> select(Responder), debate |> select(Responder),
 
 **Determining the types of relations between tables.**
 
-When joining the data, it is important to understand the types of relations between the tables. There are three types of relationships possible. A one-to-one relationship is when a record in one table is related to one record in another table. A one-to-many relationship is when a record in one table is related to many records in another table. A many-to-many relationship is when multiple records in one table are related to multiple records in another table.
+When joining the data, it is important to understand the types of relations between the tables. There are three possible types of relationships. A one-to-one relationship occurs when a record in one table is related to one record in another table. A one-to-many relationship occurs when a record in one table is related to many records in another table. A many-to-many relationship occurs when multiple records in one table are related to multiple records in another table.
 
-The content analysis and debate tables have a one-to-many relationship. The time variable represented in seconds in the content analysis are unique. The debate table has a time unit variable for every responder. So each time unit (in seconds) in the content analysis data (N = 5466), is related to multiple time units in the debate table. Making it a one-to-many relationship.
+The content analysis and debate tables have a one-to-many relationship. Values of the *time* variable represented in seconds in the content analysis are unique, while in debate table the *time* unit variable is repeated for every responder. Thus, each time unit (in seconds) in the content analysis data (N = 5466), is related to multiple time units in the debate table, making it a one-to-many relationship.
 
-The responders and debate tables have a many-to-many relationship. In the responders table, a responders is measured in multiple waves. Another way of describing this is that a single wave includes multiple responders. Additionally, in the debate table, a responder is measured in multiple time units (seconds), or in other words, one time unit includes multiple responders. Therefore, multiple responders are related to multiple responders in the debate table. Making this a many-to-many relationship.
+The responders and debate tables have a many-to-many relationship. In the responders table, each responder is measured in multiple waves. Another way of describing this is that a single wave includes multiple responders. Additionally, in the debate table, a responder is measured in multiple time units (seconds), or in other words, one time unit includes multiple responders. Therefore, multiple responders are related to multiple responders in the debate table, making this a many-to-many relationship.
 
-The responders characteristics and debate tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple records of the time variable (in seconds) in the debate data.
+The responders characteristics and debate tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple records of the *time* variable (in seconds) in the debate data.
 
 The responders characteristics and responders tables also have a one-to-many relationship. Each responder in the responders characteristics data (N = 225), is related to multiple waves (four waves) in the responders table.
 
-## Scope of the data
+## 7. Scope of the data
 
 \[A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?\]
 
@@ -351,17 +354,19 @@ A concise but accurate description of the scope of the data for the general read
 
 **add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
 
-## Analysis and Visualization
+## 8. Analysis and Visualization
 
-The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory. Furthermore, the steps in data wrangling that are necessary to answer each question and the visualization are presented and discussed in detail. The author of the visualization of research question one is Mattia Guarnerio. The author of the visualization of research question two is Lixin Lakeman. The author of the visualization of research question three is Margarita. The author of the visualization of research question four is Iria Cheng.
+The four individual research questions formulated with the GLES 2009 data are shown (again) below, to refresh your memory. Furthermore, the data wrangling steps that are necessary to answer each question and the visualization are presented and discussed in detail. The author of the visualization of Research Question 1 is Mattia Guarnerio. The author of the visualization of Research Question 2 is Lixin Lakeman. The author of the visualization of Research Question 3 is Margarita Zervoulakou. The author of the visualization of Research Question 4 is Iria Cheng.
 
-### Research Question 1
+### 8.1 ✧ Research Question 1 (Mattia Guarnerio)
 
 **Research Question 1:** In the German electoral debate of 2009, which were the specific electoral topics associated with positive or negative real-time reactions towards, and changes in public opinions on, candidates' debate performances, comparing expectations before (Wave 1) and evaluations after (Wave 2) the debate?
 
 ```{r}
 #| fig-width: 10
 #| fig-height: 7
+#| label: fig-plot_guarnerio
+#| fig-cap: Distribution of Debate Topics Across Positive and Negative Real-Time Reactions to Merkel 
 
 # I set the figure's height at 7 inches, and the figure's width at 10 inches, for pretty printing in the knitted document.
 
@@ -566,13 +571,13 @@ Second, economic topics are about 3.5% more prevalent in negative real-time reac
 
 In sum, the GLES 2009 data indicates that substantive debate topics did not have much of an impact on the German public's real-time reactions and general evaluations of candidates' performances during the TV duel. The only two exceptions are energetic and environmental policies, which generated slightly more positive real-time reactions, but did not sway German voters, and economic policies, which may be part of the reason why some respondents thought Merkel performed worse than they expected during the debate.
 
-### Research Question 2
+### 8.2 ✧ Research Question 2 (Lixin Lakeman)
 
-"How do the opinions of the voters regarding the candidates change throughout the debate by different age groups and by gender?" - by Lixin Lakeman
+**Research Question 2:** "How do the opinions of the voters regarding the candidates change throughout the debate by different age groups and by gender?" - by Lixin Lakeman
 
 This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics.
 
-#### Data merging
+**Data merging.**
 
 To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel and Steinmeier during the debate on a 6-point Likert-scale. This is a relative scale, so a very good impression of Steinmeier is a very bad impression of Merkel (0, and vice versa, a very good impression of Merkel is a very bad impression of Steinmeier (6). The middle of the scale is a Neutral (6) impression. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
 
@@ -585,13 +590,13 @@ df_lx <- left_join(responders_characteristics |>
   distinct()
 ```
 
-#### Visualization
+**Data Visualization.**
 
 ```{r}
-#|label: fig-plot_lixin
-#|fig-cap: a figure about Avarage Reactions During the Live Debate by Age and Gender.
-#|fig-height: 8 
-#|fig-width: 11
+#| label: fig-plot_lixin
+#| fig-cap: Average Reactions During the Live Debate by Age and Gender.
+#| fig-height: 8 
+#| fig-width: 11
 
 df_lx |> 
   filter(
@@ -672,7 +677,7 @@ Another remarkable thing is that in the young-adult group, both females and male
 
 Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it only shows a impression score of 2.7-3.5 while the full scale ranges from 0-6. So in general, it can be concluded that the impressions regarding Steinmeier and Merkel stayed quite neutral throughout the debate: There are some differences in impressions throughout the debate between male and female responders within different age groups, although these differences are quite small.
 
-### Research Question 3
+### 8.3 ✧ Research Question 3 (Margarita Zervoulakou)
 
 Report and briefly present Research Question 3 to the general public.
 
@@ -685,7 +690,7 @@ Report and briefly present Research Question 3 to the general public.
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
-### Research Question 4
+### 8.4 ✧ Research Question 4 (Iria Cheng)
 
 Report and briefly present Research Question 4 to the general public.
 
@@ -698,30 +703,12 @@ Report and briefly present Research Question 4 to the general public.
 
 Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
-## Conclusions
+## 9. Conclusions
 
 Write a brief conclusion.
 
-## Literature
+## 10. Literature
 
 Hadley Wickham, Mine Cetinkaya-Rundel, Garret Grolemund (2023). *R for Data Science (2nd Edition): Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media, ISBN: 9781492097402.
-
-**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
-
-## NOTES! (deleting this before handing in)
-
-## Before continuing, these were the reactions
-
-"It couldn't have been a duel anyway" ✦ *Die Welt*
-
-"The format of a duel is not appropriate to convey political content" ✦ *Sueddeutsche Zeitung*
-
-"Voters \[...\] did not learn a thing in the debate" ✦ *Berliner Zeitung*
-
-"This was not an exciting duel; it was shop talk between the chancellor and her deputy" ✦ *Bild*
-
-"Expectations for the debate were not high in the first place; there was no real verbal sparring, there were no new facts: somehow, they do appear to still like each other" ✦ *Nordsee-Zeitung*
-
-"The two get along well, and that was evident last night" ✦ *General-Anzeiger*
 
 **Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
