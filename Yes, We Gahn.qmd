@@ -15,6 +15,8 @@ number_sections: true
 embed_resources: true
 pdf: default
 docx: default
+bibliography: yeswegahn.bib
+csl: apa.csl
 editor: visual
 date: now
 eval: true
@@ -28,21 +30,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1. Introduction
 
-*"This was not an exciting duel; it was shop talk between the chancellor and her deputy"* ✦ Bild (2009)
+*"This was not an exciting duel; it was shop talk between the chancellor and her deputy"* ✦ [@isenson_uninspiring_2009]
 
 Sunday the 13th of September 2009, christian-democratic Chancellor Angela Merkel and her social-democratic rival Frank-Walter Steinmeier engaged in a debate on German television. They exchanged their views on several electoral topics, such as minimum wages and nuclear energy, ahead of the Bundestag elections, set on Sunday the September the 27th, two weeks after the so-called "duel".
 
-The key electoral issue was with which political party Merkel’s CDU/CSU alliance would form a coalition. Would there be another four years of a Grand Coalition, or would the SPD be replaced by the liberal Freie Demokratische Partei (FDP)? Aligning with this situation, the conservatives ran a candidate-centred campaign, mostly ignoring electoral issues, whereas the competing parties all tried to raise several political claims, and especially the social democrats, who focused on economic problems by publishing a *Deutschlandplan*, an alternative plan for Germany.
+The key electoral issue was with which political party Merkel’s CDU/CSU alliance would form a coalition. Would there be another four years of a Grand Coalition, or would the SPD be replaced by the liberal Freie Demokratische Partei (FDP)? Aligning with this situation, the conservatives ran a candidate-centred campaign, mostly ignoring electoral issues, whereas the competing parties all tried to raise several political claims, and especially the social democrats, who focused on economic problems by publishing a *Deutschlandplan*, an alternative plan for Germany [@schoen_merely_2011].
 
-Source: [*"Merely a Referendum on Chancellor Merkel? Parties, Issues and Candidates in the 2009 German Federal Election"*](https://doi.org/10.1080/09644008.2011.554107) by Harald Schoen, German Politics.
-
-The conservative Christlich Demokratische Union (CDU), and its Bavarian ally, the Christlich Soziale Union (CSU) were polling with a double-digit lead at the time. Their main opponents, the Sozialdemokratische Partei Deutschlands (SPD), had governed with them in a Große Koalition (Great Coalition) for four years. Together with the immediate reactions of several national and regional newspapers, these facts solidly hint at an uninspiring, if not outright boring TV confrontation.
-
-Source: [*"Merkel and Steinmeier TV debate underwhelms voters"*](https://www.france24.com/en/20090914-merkel-steinmeier-tv-debate-underwhelms-voters-) by News Wires, France24.
+The conservative Christlich Demokratische Union (CDU), and its Bavarian ally, the Christlich Soziale Union (CSU) were polling with a double-digit lead at the time. Their main opponents, the Sozialdemokratische Partei Deutschlands (SPD), had governed with them in a Große Koalition (Great Coalition) for four years. Together with the immediate reactions of several national and regional newspapers, these facts solidly hint at an uninspiring, if not outright boring TV confrontation [@news_wires_merkel_2009].
 
 Confirming her large lead, Angela Merkel comfortably secured a second term as chancellor. Perhaps unsurprisingly, it appears that the debate did not change many opinions among voters, regardless of the opposing centres of attention, corroborating the impressions of pundits, media outlets, and even party members. In this report, we utilise information from the German Longitudinal Election Study (GLES) 2009 to evaluate this dominant "boring duel" narrative. We combine panel, real-time, and content analysis data to illustrate trends and patterns that may, or may not, endorse the idea of Merkel versus Steinemeier being the most boring political debate ever.
 
-This project aims to bring the "most boring" debate alive through visualizations, which require prior data wrangling in R. We work with the GLES 2009 data, a complex data set that consists of information about the responders, live reactions during the debate, and the TV duel's content. First, the research questions formulated in reference to the complex data set are presented. Then, the steps for tidying the complex data set are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the `tidyverse` package is used to wrangle and visualize the data. `tidyverse` is an opinionated collection of R packages designed for data science. Packages that are part of the `tidyverse` are: `readr`, `dplyr`, `tibble`, `purrr`, `tidyr`, `forcats`, `stringr`, and `ggplot2`. All packages share an underlying design philosophy, grammar, and data structures.
+This project aims to bring the "most boring" debate alive through visualizations, which require prior data wrangling in R. We work with the GLES 2009 data, a complex data set that consists of survey information about the responders [@rattinger_tv_2010-1], live reactions during the debate [@rattinger_tv_2010], and the TV duel's content [@gles_tv_2010]. First, the research questions formulated in reference to the complex data set are presented. Then, the steps for tidying the complex data set are discussed in detail. The data joining process is described next, followed by a description of the scope of the data. Four visualizations that answer the earlier stated research questions are discussed in detail and presented. For this project, the `tidyverse` package is used to wrangle and visualize the data. `tidyverse` is an opinionated collection of R packages designed for data science. Packages that are part of the `tidyverse` are: `readr`, `dplyr`, `tibble`, `purrr`, `tidyr`, `forcats`, `stringr`, and `ggplot2`. All packages share an underlying design philosophy, grammar, and data structures [@wickham_welcome_2019].
 
 ## 2. Research Questions
 
@@ -91,7 +89,7 @@ content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version
 
 The GLES 2009 data sets are downloadable in German. To make the content of the data sets and the results interpretable for the project members as well as our audience, the content analysis data was translated to English. This was necessary to better understand the context of the debate, and the topics and themes discussed during the televised duel.
 
-Translation was executed manually with rename(), and automatically with the DeepL translator, using a free trial DeepL Pro account. However, this option only allows for a monthly limited translation. Therefore, translation was completed before the start of this project, and the content analysis data set in German was replaced by its translated English version. The code for automatic translating with DeepL is included below to make our report transparent and reproducible, but de-activated for the reasons described above.
+Translation was executed manually with rename(), and automatically with the DeepL translator, using a free trial DeepL Pro account [@zumbach_interface_2023]. However, this option only allows for a monthly limited translation. Therefore, translation was completed before the start of this project, and the content analysis data set in German was replaced by its translated English version. The code for automatic translating with DeepL is included below to make our report transparent and reproducible, but de-activated for the reasons described above.
 
 ```{r}
 # Some column names from the responders data set are in German.
@@ -143,7 +141,7 @@ content_analysis <- content_analysis |> rename(
 
 ## 4. Tidying the data: EveRything in One Place
 
-To conduct our analyses and address our research question, we must organise the GLES 2009 in a consistent way, using a system called **tidy data**. To become tidy, data sets must align with four key interrelated principles:
+According to Wickham, Çetinkaya-Rundel, and Grolemund [-@wickham_r_2023], to conduct our analyses and address our research question, we must organise the GLES 2009 in a consistent way, using a system called **tidy data**. To become tidy, data sets must align with four key interrelated principles:
 
 1.  Each type of case needs its own tibble.\
 2.  Each observation must have its own row\
@@ -707,8 +705,7 @@ Present both a pattern (as a first impression) and deviations from this pattern 
 
 Write a brief conclusion.
 
-## 10. Literature
+## 10. References
 
-Hadley Wickham, Mine Cetinkaya-Rundel, Garret Grolemund (2023). *R for Data Science (2nd Edition): Import, Tidy, Transform, Visualize, and Model Data*. O'Reilly Media, ISBN: 9781492097402.
-
-**Source:** [*"Uninspiring exchange"*](https://www.dw.com/en/german-press-review-an-uninspiring-tv-debate/a-4683668) by Nancy Isenson, Deutsche Welle.
+::: {#refs}
+:::
