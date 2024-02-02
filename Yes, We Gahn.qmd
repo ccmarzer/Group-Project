@@ -2,7 +2,9 @@
 title: "Yes, We Gahn!"
 author: "Iria Cheng (15136884), Mattia Guarnerio (14350920), Lixin Lakeman (12857890), and Margarita Zervoulakou (14462249)"
 format: docx
-html:
+toc: true
+toc-location: body
+number_sections: true
 embed_resources: true
 pdf: default
 docx: default
