@@ -50,7 +50,7 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 **Research Question 2:** How do the opinions of the voters regarding the candidates change throughout the debate for different age groups and by gender?
 
-**Research Question 3:** How do different types of candidate narratives/strategies (acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+**Research Question 3:** Are there debate strategies used in the debate by the two Candidates that work better (on average evoke better reactions)? How did different age groups of viewers react?
 
 **Research Question 4:** To what extent do viewer reactions during the debate relate to actual voting behaviour?
 
@@ -696,7 +696,7 @@ Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it on
 
 ### 8.3 ✧ Research Question 3 (Margarita Zervoulakou)
 
-**Research Question 3:** Are there debate strategies used in the debate by the two Candidates that work better (on average evoke better reactions)? How did different age groups of viewers ?
+**Research Question 3:** Are there debate strategies used in the debate by the two Candidates that work better (on average evoke better reactions)? How did different age groups of viewers react?
 
 The plot below explores this relationship between the reactions of different age groups and debate strategies used by the two candidates in the 2009 debate. My dependent variable is the viewer's reaction "score" from the Debate data set and my independent variable is "Strategy" from the Content analysis data set. As I also wanted to see how different age groups react to these strategies I had to include the "Age" variable from the Responders data set. In that case, I had to combine all three data sets. My first step was to merge variables from Responders data set with the Debate data set by the variable "time" which is the primary key to both of them. My second step was to join the resulting table with the content analysis data set and I did that by the variable time which is the foreign key in both.
 
