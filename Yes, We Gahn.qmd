@@ -683,7 +683,7 @@ Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it on
 
 Report and briefly present Research Question 3 to the general public.
 
-**Research Question 3:** Are there debate strategies that work better (evoke positive responses of the viewers)? 
+**Research Question 3:** Are there debate strategies that work better (evoke positive responses of the viewers)?
 
 Data Wrangling and Visualization
 
@@ -730,16 +730,184 @@ theme(axis.text.x = element_text(angle = 45, hjust = 1),
 
 ### 8.4 ✧ Research Question 4 (Iria Cheng)
 
-Report and briefly present Research Question 4 to the general public.
+**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behavior, and this relationship within different party groups specifically.
 
-**Research Question 4:** To what extent do viewer reactions of the debate relate to actual voting behaviour.
+I want to know whether people's judgments on the performance of the live debate for both candidates actually relate to their voting preference, that is to say, if you actually think one candidate did better than the other in the debate, will you just vote for him/her?
+
+**Measurement**
+
+***Debate performance preference*** For people's judgement on debate performance, it was measured in a hh:mm:ss format which record people's live reactions per second since the start of the debate, with score scaled between 1 to 7. 1 means strong preference over Merkel, and strong dislike for Steinmeier, 4 being neutral, and verse visa. I calculate the means of the score for each responder.
+
+***Voting preference*** For their voting behavior, I decide to use the measurement of "sympathy" for each candidate as the variable "voting intention" did not record people's exact voting preference. This was measured twice, before (wave 1) and right after (wave 2) the debate, which allow us to see the change over periods. One problem here is the sympathy score is measured separately for both Merkel and Steinmeier, unlike the measurement for debate reaction. So for the sake of uniformity, I sum up the sympathy scores for Merkel and Steinmeier, and calculate the percentage of sympathy towards Steinmeier and use that as people's voting inclination. For example, if a respondent has a sympathy score of 2 for Merkel and 8 for Steinmeier, on a scale of 0 to 1, the 0. 8 means a higher likelihood of voting for Steinmeier.
+
+***Party identification*** Party id are divided in three categories.
 
 ```{r}
-# Data Wrangling and Visualization.
+#for the group party of the data tidying, I did not apply principle three (not using content_analysis dataset) and three (have to calculate the average score from the live debate reaction, so this step is not necessary for my own data project), also the data joining part, so you may have to reload the "debate" dataset:
+
+debate <- read_csv("Debate 2009.csv", show_col_types = FALSE)
+
+#and all the selected operations applied to the "responder" dataset from previous are listed here, so you can just run the following lines:
+
+responders <- read_csv("Responders2009.csv", show_col_types = FALSE) 
+responders <- responders |> rename(
+                     Location = Standort, 
+                     Participation_W1 = Teilnahme1, 
+                     Participation_W2 = Teilnahme2, 
+                     Participation_W3 = Teilnahme3,
+                     Participation_W4 = Teilnahme4
+                     )
+responders <- responders |>
+  rename_with(~sub("(^[A-D])(.*)", "\\1-\\2", .), matches("^[A-D]")) |>
+  pivot_longer(
+    cols = starts_with("A") | starts_with("B") | starts_with("C") | starts_with("D"), 
+    names_to = c("Wave", ".value"), 
+    names_sep = "-"
+  ) |>
+  mutate(
+    Wave = case_when(
+      Wave == "A" ~ "Wave 1", # "A" is "Wave 1".
+      Wave == "B" ~ "Wave 2", # "B" is "Wave 2".
+      Wave == "C" ~ "Wave 3", # "C" is "Wave 3".
+      Wave == "D" ~ "Wave 4", # "D" is "Wave 4".
+      TRUE ~ Wave
+    ),
+    Participation = case_when(
+    
+      Wave == "Wave 1" & Participation_W1 == 1 ~ 1,
+      Wave == "Wave 1" & Participation_W1 == 0 ~ 0,
+      
+      Wave == "Wave 2" & Participation_W2 == 1 ~ 1,
+      Wave == "Wave 2" & Participation_W2 == 0 ~ 0,
+      
+      Wave == "Wave 3" & Participation_W3 == 1 ~ 1,
+      Wave == "Wave 3" & Participation_W3 == 0 ~ 0,
+      
+      Wave == "Wave 4" & Participation_W4 == 1 ~ 1,
+      Wave == "Wave 4" & Participation_W4 == 0 ~ 0,
+      
+      TRUE ~ NA
+    )
+  ) |>
+  select(-Participation_W1, -Participation_W2,
+         -Participation_W3, -Participation_W4) |>
+  relocate(Responder, Wave, Participation)
+
+#--------------------indivisual part: responder dataset-----------------
+
+responders_sympathy_party <- responders |>
+  select(Responder, Wave, "24_01", "24_02", "56_01", "57") |> # select sympathy sccore for Merkel and Steinmeier, party identification and party leaning
+  group_by(Responder) |>                                 #group the data set by responder
+  rename( sympathy_merkel = "24_01", sympathy_steinmeier = "24_02", party_id = "56_01", party_leaning = "57")|>                                  #rename the variables
+  filter(
+    !(sympathy_merkel %in% c(99, 102, 103, 104) |
+      sympathy_steinmeier %in% c(99, 102, 103, 104) |
+      party_id %in% c(99) |
+      party_leaning %in% c(99, 100)))                    #drop the NAs
+
+
+#---------------for the debate dataset------------------
+
+debate <- debate %>%
+  mutate(performance_reaction = rowMeans(select(., starts_with("t"))))|> #calculate the means of people's reaction scores on the live debate
+  select(Responder, performance_reaction)
+
+#------------------inner_join the two dataset---------------
+responders_sympathy_party<- inner_join(responders_sympathy_party, debate, by = "Responder")
+#I prefer "inner_join" because I only want to keep the keys (reponders) that present in both datasets
+
+#-----------------------------------------------------------------
+#then I have to group the data by responder, to fill all "party_id", "party_leaning" and "performance reaction" for wave 2, 3 and 4 for each responder with the exact same value as wave one. this step is done for the aim of later visualization. I will explain the reason later again when interpreting the plot.
+
+fill_responder <- function(responders_sympathy_party) 
+  responders_sympathy_party <- responders_sympathy_party|>
+    fill(c("party_id", "party_leaning","performance_reaction"), .direction = "down")
+  
+responders_sympathy_party_1 <- responders_sympathy_party |>     #create a new df      
+  group_by(Responder) |>                                        #group by responders
+  group_map(~ fill_responder(.x), .keep = TRUE) |>   
+  #the function of  "group_map" will automatically drop the grouping column of "responder" by default, so use ".keep = TRUE" to keep it
+  bind_rows() |>   # "group_map" with "fill_responder" operate for each group separately, and "bind_rows" combined these separated dfs into one
+  mutate(time_wave = as.numeric(str_replace(Wave, "Wave ", "")))
+
+#---------------------------------------------------------------------------  
+responders_sympathy_party_1$time_wave <- as.numeric(responders_sympathy_party_1$time_wave)
+#turn wave into numeric variable
+
+responders_sympathy_party_1 <- responders_sympathy_party_1|>
+    mutate(voting_preference = sympathy_merkel / (sympathy_merkel + sympathy_steinmeier)) 
+#to calculate the percentage of people's voting preference for Merkel over Steinmeier, to make it consistant with the measurement of live debate reaction
+  
+
+#recode the names of party id:
+responders_sympathy_party_1 <- responders_sympathy_party_1 |>
+  mutate(party_id = case_when(
+    party_id == 84 ~ "No Party",
+    party_id %in% c(8, 7, 6, 5) ~ "Other Party",
+    party_id == 4 ~ "SPD",
+    party_id == 1 ~ "CDU/CSU",
+    TRUE ~ as.character(party_id)))|>
+  filter(!is.na(party_id))
+
+
+data_final <- responders_sympathy_party_1|>
+  drop_na(performance_reaction)|>
+  select(Responder, time_wave, voting_preference, performance_reaction, party_id, party_leaning)
+
+
+#i obeserve there are some cases (responders) which does not have four waves of observation, i.e., only three waves, so i have to filter them because the missing values may cause unpredicted movements when plotting animation (that's also the reason I got a plot with dots moving horizontally at first)
+
+data_final<- data_final |>
+  group_by(Responder) |>
+  filter(n_distinct(time_wave) == 4) |>
+  ungroup()
+
+
+#------using ggplot and gganimate to visualize------------------
+
+install.packages(c("ggplot2","gganimate","gifski"))
+library(ggplot2)
+library(gganimate)
+
+plot_animate <- ggplot(data_final, aes(performance_reaction, voting_preference, color = party_id ))+
+  geom_point(alpha = 0.5, show.legend = TRUE)+
+   geom_vline(xintercept = 4,  color = "gray") +
+   geom_hline(yintercept = 0.5, color = "gray") +  # to add vertical and horizonal neutral lines so that readers can process information about attitude changes over time more easzily
+   geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~party_id)+         #to seperate the plot by parties
+  labs(title = "Wave: {frame_time}", x = "deabte performance", y = "voting intention")+
+  theme(plot.title = element_text(size = 20, face = "bold", color = "black"),
+        axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+        axis.title.y = element_text(size = 18, face = "bold", color = "black"),
+        axis.text.x = element_text(size = 16, face = "bold", color = "black"),
+        axis.text.y = element_text(size = 16, face = "bold", color = "black"),
+        strip.text.x = element_text(size = 16, face = "bold", color = "black"),
+        plot.margin = unit(c(.5, .5, .5, .5),"cm"))+
+  labs(title = "Debate Performance vs Voting Intention Wave:{frame_time}", x = "Debate Reaction", y = "Voting Intention")+
+  transition_time(time_wave)+
+  ease_aes("linear")+
+  annotate("text", x = 7, y = 1, label = "Merkel", color = "red") +  
+  annotate("text", x = 1, y = 0, label = "Steinmeier", color = "blue") #use the function annotate to add text labels
+
+
+animate(plot_animate, width = 1500, height = 500)
+anim_save("plot_debateperformace_votingintention.gif")
 
 ```
 
-Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+**First impression**
+
+So basically the data is actually spread throughout the graph, with the center of the graph actually representing a neutral attitude. The left and right divisions of the chart mean that whether people prefer Merkel or Steinmeier in the debate, and the top and bottom divisions of the graph mean that whether people are more likely to vote for Steinmeier or Merkel.
+
+**Interpretation of the plot**
+
+Basically this plot provides an answer to my research question, which is the relationship between people's reaction to two candidates' debate performance and their voting intentions. The x-axis stands for viewers' judgments for the performance, if they think Merkel performs better, then they are in the right part of the plot; the y-axis represents the possibility of people's voting on the candidates (which is measured from the sympathy score), if you are more likely to vote for Merkel, then you are in the topper part, and vice versa. People's voting preference was measured four times, with wave one (before the debate), wave two (right after the debate), and wave three and four (before and after the election).
+
+And as we can see directly from the plot, people in Merkel's party (CDU/CSU) is represented with color red, with Steinmeier (SPD) being blue, and people with an identification of other parties being green. As wave changes, people's voting preference changes, and their reaction is recorded in the x-axis (which is time-constant). If we want to make a conclusion that between wave one and two, the debate performance actually positively relates to people's voting intentions, then the dots should scattered around a line at 45 degrees. In fact, we do observe such spread for the dots, especially for people with other party identification and SPD people.
+
+We especially focus on wave one and two. As the wave changes from one to two, while SPD partisans are more likely to move downward after watching the debate, suggesting that they are more likely to vote for their party's representative (no longer "betraying" their party), a similar pattern is observed for people with other party identifications as well — most likely due to the fact that Steinmeier's performs better in the debate; whereas Merkel's supporters were more "loyal" in comparison: the line representing the relationship is more parallel to the x-axis, which implies that the performance in the debate was less likely to have a significant impact on their voting decision.
+
+But over time, support for Merkel has increased in all three graphs, which may due to reasons other than the debate; and this also explains the reason that despite Steinmeier did better in the debate, it was Merkel who ultimately won the election,
 
 ## 9. Conclusions
 
