@@ -76,13 +76,13 @@ library(deeplr) # ...and the "deeplr" library, for translating textual data in G
 The GLES 2009 data can be imported using the `readr` package that is part of the tidyverse. The three tables on responders' political behaviour (responders 2009), their live reactions during the TV duel (Debate 2009), and on the debate's contents and dynamics (content_anaysis_eng) are formatted as a `.csv` file, and can be imported with the following code.
 
 ```{r, include = FALSE}
-#setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
+# We avoid setting the working directory inside this chunk, as this would bind every user to change the directory path when executing the code. To import the data, we thus refer to raw file URLs on GitHub. We understand this solution may not work if the files are moved in the future, but it is currently the best way to refer to the GLES 2009 data we employ, and especially its translated versions in English.
 
-debate <- read_csv("Debate 2009.csv", show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
+debate <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Debate%202009.csv?token=GHSAT0AAAAAACMWXOEMOYXEBKFQ6OZIGMUOZN6NMDA"), show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
 
-responders <- read_csv("Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
+responders <- read_csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv?token=GHSAT0AAAAAACMWXOENF2BSICNHWBQFB4N4ZN6NKDQ", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
 
-content_analysis <- read.csv("content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
+content_analysis <- read.csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/content_analysis_eng.csv?token=GHSAT0AAAAAACMWXOEM4RK5LMGV2NVATV4SZN6NJHA") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
 ```
 
 ### 3.3 ✧ How and why did we translate the text?
@@ -352,10 +352,7 @@ The second file, *Debate 2009.csv*, encompasses the second-to-second live impres
 
 The third file, *Content Analysis debate 2009.csv*, contains all outcomes of the content analysis of the TV duel, offering information on topics / themes of discussion, candidate strategies, and subjects / objects of each expression, all classified on a sentence level. All statements are associated with their starting and ending time, in two distinct formats: time in hours, minutes, and seconds; duration in total seconds elapsed from the onset of the debate.
 
-As mentioned above, the data sets violated two of the four criteria of tidy data: Principle 1, and especially Principle 2. Furthermore, there are several imperfections 
-any of the 4 tidy criteria. The only imperfection we spotted was in the content analysis data set were they start to measure form second 28'' instead of 1''.
-
-**add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
+As mentioned above, the data sets violated two of the four criteria of tidy data: Principle 1, and especially Principle 2. Furthermore, there are several imperfections in the measurements made in *Debate 2009.csv*. GESIS started to record real-time reactions from second 28, instead of second 1, and missing data is on seconds 2769 and 5494.
 
 ## 8. Analysis and Visualization
 
