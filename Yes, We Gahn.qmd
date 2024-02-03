@@ -584,12 +584,12 @@ This research question aims to explain differences in the responders' live react
 To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel and Steinmeier during the debate on a 6-point Likert-scale. This is a relative scale, so a very good impression of Steinmeier is a very bad impression of Merkel (0, and vice versa, a very good impression of Merkel is a very bad impression of Steinmeier (6). The middle of the scale is a Neutral (6) impression. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
 
 ```{r}
-df_lx <- left_join(responders_characteristics |> 
-                     select(Responder, Gender, Age), 
-                   debate |> 
+df_lx <- left_join(responders_characteristics |> #use the left_join() function to keep all the observations (n = 225) in this table, that have a match with the debate table.
+                     select(Responder, Gender, Age), #from the responders_characteristics table, select the 'responder', 'Gender', and 'age' variables
+                   debate |> #from the debate table, select the 'responder', 'time', 'hour', 'minute', 'second', and 'score' variables
                      select(Responder, time, hour, minute, second, score),
-                   by = "Responder") |> 
-  distinct()
+                   by = "Responder") |> #join by 'responder' variable
+  distinct() #only keep distinct cases so that n = 225.
 ```
 
 **Data Visualization.**
@@ -600,7 +600,9 @@ df_lx <- left_join(responders_characteristics |>
 #| fig-height: 8 
 #| fig-width: 11
 
-df_lx |> 
+# Setting the figure's height at 8 inches, and the figure's width at 11, for pretty printing in the knitted document.
+
+df_lx |> #use a pipe to access the data and relevant variables.
   filter(
     !is.na(score), 
     (Gender != 99), 
@@ -629,36 +631,36 @@ df_lx |>
     "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "60"),
   "Senior (60+)" = c(
     "61", "62", "63", "65", "66", "67", "68", "69", "70", "71", "72", "73", "75", "76", "82")
-  )) |> mutate(Age_rc = fct_relevel(Age_rc,
+  )) |> mutate(
+    Age_rc = fct_relevel(Age_rc,
             "Young Adults (18-28yrs)",
             "Adults (29-40yrs)",
             "Middle Aged (41-60yrs)",
             "Senior (60+)"))|> 
-  group_by(
-    time, Age_rc, Gender_rc) |> 
-  mutate(
-    score_avg_time = mean(score_rc)) |> 
-ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype = as.factor(Gender_rc))) +
-  geom_smooth(method = "gam", linewidth = 2, se = FALSE) + 
-  scale_color_manual(values = c("purple", "orange")) +
-  scale_linetype_manual(values = c("longdash", "twodash")) +
-  geom_hline(yintercept = 3, color = "gray55", linewidth = 1) +
-  annotate("text", x = 4776, y = 2.95, label = "Neutral", color = "gray55") +
-  scale_x_time() +
-  facet_wrap(~Age_rc) +
-  labs(title = "Voters' Impression of Steinmeier versus Merkel",
-       subtitle = "Average Reactions During the Live Debate by Age and Gender",
-       caption = c("Data: GLES 2009", "Young-adults(n= 428293), Adults(n= 230506), Middle-aged(n= 357058), Senior(n= 181190)"),
-       x = "Time Live Debate",
-       y = "Steinmeier (0) vs. Merkel (6)",
-       color = "Gender",
-       linetype = "Gender") +
-  theme_bw() +
-  theme(legend.position = "bottom",
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 11, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)),
-    plot.caption = element_text(hjust = c(1, 0), size = 7),
-    legend.text = element_text(size = 10),
+  group_by(time, Age_rc, Gender_rc) |> #group the data by time unit (second), then by age group, and then by gender.
+  mutate(score_avg_time = mean(score_rc)) |> #for this grouped data, calculate the mean of the score_rc variable.
+ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype = as.factor(Gender_rc))) + # create the first layer of the ggplot, mapping the x-axis to time, y to the average score per time unit. Set the color to gender as factor, set the linetype to gender also as factor.
+  geom_smooth(method = "gam", linewidth = 2, se = FALSE) + #add a smooth geom to the plot, and dont incude the confidence interval, set the linewidth to 2.
+  scale_color_manual(values = c("purple", "orange")) + #adjust the colors of the two lines in the plot to distinguish between male and female responders.
+  scale_linetype_manual(values = c("longdash", "twodash")) + #adjust the linetype of the two lines in the plot so that color blind readers can also distinguish between male and female responders.
+  geom_hline(yintercept = 3, color = "gray55", linewidth = 1) + #add a reference line at 3 at the y-axis, so that the reference line for a neutral score is visible. Set the color to gray and the linewidth to 1
+  annotate("text", x = 4776, y = 2.95, label = "Neutral", color = "gray55") + #give the reference line the text geom "Neutral" at the value of 4776 at the x-axis, and value of 2.95 at the y-axis. Set the color of this text geom to the same gray color as the reference line.
+  scale_x_time() + #visualize the x-axis values as time units in hours, minutes, seconds.
+  facet_wrap(~Age_rc) + #facet the plot by Age_rc, to present seperate plots for the four age groups 
+  labs(title = "Voters' Impression of Steinmeier versus Merkel", #give the plot a title
+       subtitle = "Average Reactions During the Live Debate by Age and Gender", #give the plot a subtitle
+       caption = c("Data: GLES 2009", "Young-adults(n= 428293), Adults(n= 230506), Middle-aged(n= 357058), Senior(n= 181190)"), #give the plot a caption for the used data, and a caption for the sample sizes of the four age groups
+       x = "Time Live Debate", #adjust the variable label of the x-axis
+       y = "Steinmeier (0) vs. Merkel (6)", #adjust the variable label of the y-axis and show the range of the varuable
+       color = "Gender", #adjust the title of the legend for line color
+       linetype = "Gender") + #set the legend for the linetype also to the color legend, so that the plot only shows one legend for both color and linetype as this is both gender.
+  theme_bw() + #set the theme to black and white
+  theme(
+    legend.position = "bottom", #position the legend to the bottom of the plot so that the plot can be wider.
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5), #adjust the title text of the plot: lettersize to 12 in bold, and move it to the middle of the plot.
+    plot.subtitle = element_text(size = 11, face = "italic", hjust = 0.5, margin=margin(0,0,15,0)), #adjust the subtitle text of the plot: lettersize to 11 in italic, and move it to the middle of the plot. Adjust the bottom margin of the title to 15, so that there is some space between the subtitle and the plot
+    plot.caption = element_text(hjust = c(1, 0), size = 7), #adjust the 2 caption texts of the plot to size 7 and set the first caption to the right side of the plot, and the second caption to the left side of the plot
+    legend.text = element_text(size = 10), #adjust the textsize of the legend to 10
     strip.background = element_rect(fill = c("slategray1"), color = "black", linewidth = 0.7),
     strip.text.x = element_text(size = 10),
     axis.text = element_text(size = 10, color = "black"),
@@ -668,7 +670,7 @@ ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype 
     panel.grid.minor = element_line(color = "gray80"),
     panel.background = element_rect(fill = "white", color = "black", linewidth = 0.7),
     panel.spacing = unit(1, "lines"))
-
+?theme
 ```
 
 The figure above shows the average live impressions regarding Steinmeier and Merkel during the entire live debate. It visualizes the average impressions per four age groups (young-adults, adults, middle-aged and senor), and within each age group a distinction between female and male responders is made. As the figure shows, there are no big difference between the age groups and within the groups between males and females. In all four age groups, males and females are close to the gray solid reference line, and thus have a neutral impression regarding Steinmeier and Merkel. Altough, senior males are an exception. This group deviates on average more from the neutral line and seem to have a more positive impression of Merkel than senior females, and males and females in the other three age groups.
