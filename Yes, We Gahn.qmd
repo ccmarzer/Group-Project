@@ -346,13 +346,14 @@ The responders characteristics and responders tables also have a one-to-many rel
 
 ## 7. Scope of the data
 
-The data we used in this Project consisted of three data files: Responders2009.csv, Debate 2009.csv and Content Analysis debate 2009.csv. The first file contained data/information from viewers/participants (n=225) collected before the debate (Wave 1), directly after the debate (Wave 2), 1-2 weeks after the debate (Wave 3), and 4 - 6 weeks after the debate (Wave 4). The scope of this data included characteristics of the viewers such as age, sex, education level ,and political participation data such as voting intention, party identity, and political interest among others.
+The data we leverage in this project consists of three data files: *Responders2009.csv* [@rattinger_tv_2010-1], *Debate 2009.csv* [@rattinger_tv_2010-1], and *Content Analysis debate 2009.csv* [@gles_tv_2010]. The first file contains data from viewers/participants (N = 225) collected right before the debate (Wave 1), directly after the debate (Wave 2), 1-2 weeks after the debate, or right before the election (Wave 3), and 4-6 weeks after the debate, or some time after the election (Wave 4). The scope of this data set includes characteristics of the viewers such as age, sex, level of education, and information on political participation and behaviour such as voting intention, party identification, and political interest, among others.
 
-The second data file Debate 2009.csv contained the second-to-second live reaction to the statements made by the two candidates in the TV duel. The way live reaction was measured for the candidates is on a Likert scale from 1-7 with 1 being "very good impression of Steinmeir and very bad impression of Merkel", 4 being a neutral impression and 7 being "Very good impression of Merkel, and very bad impression of Steinmeier". This data contained real time responses of the viewers to the debate for every second.
+The second file, *Debate 2009.csv*, encompasses the second-to-second live impressions to the statements made by the two candidates during the TV duel. In other words, this data set consists of all real-time reactions of all responders for every second of the debate. Live reaction is measured on a Likert scale extending from 1 to 7, with 1 being "very good impression of Steinmeier and very bad impression of Merkel", 4 being a neutral impression, and 7 being "very good impression of Merkel and very bad impression of Steinmeier".
 
-The last data file, Content Analysis debate 2009.csv, contained analysed data from the debate such as themes of discussion, strategies, all divided by sentence. Also each sentence was measured for duration from starting minute to end minute.
+The third file, *Content Analysis debate 2009.csv*, contains all outcomes of the content analysis of the TV duel, offering information on topics / themes of discussion, candidate strategies, and subjects / objects of each expression, all classified on a sentence level. All statements are associated with their starting and ending time, in two distinct formats: time in hours, minutes, and seconds; duration in total seconds elapsed from the onset of the debate.
 
-As mentioned above the quality of data did not violate any of the 4 tidy criteria. The only imperfection we spotted was in the content analysis data set were they start to measure form second 28'' instead of 1''.
+As mentioned above, the data sets violated two of the four criteria of tidy data: Principle 1, and especially Principle 2. Furthermore, there are several imperfections 
+any of the 4 tidy criteria. The only imperfection we spotted was in the content analysis data set were they start to measure form second 28'' instead of 1''.
 
 **add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
 
@@ -579,7 +580,7 @@ In sum, the GLES 2009 data indicates that substantive debate topics did not have
 
 This research question aims to explain differences in the responders' live reaction to the debate, by age and gender as group characteristics.
 
-**Data**
+**Data Wrangling.**
 
 To answer research question two, data from two tables are required. First, it requires the respondents' live reactions to the debate from the debate table. Second, it requires the respondents' characteristics from the respondent characteristics table.The dependent variable (y) is 'score', which measures the relative good impression of Merkel and Steinmeier during the debate on a 6-point Likert-scale. This is a relative scale, so a very good impression of Steinmeier is a very bad impression of Merkel (0, and vice versa, a very good impression of Merkel is a very bad impression of Steinmeier (6). The middle of the scale is a Neutral (6) impression. This variable was recoded from 1-7 to 0-6. The x-axis variable is 'time', which measures the time of the live debate in seconds, ranging from 0s - 5493s. The grouping variables are Age categorised in four groups: young adults (18-28), adults (29-40), middle-aged (41-60) and senior (60+) responders, and Gender in which female (1) and male (2).
 
@@ -691,16 +692,13 @@ The plot below explores this relationship between the reactions of different age
 
 In addition, as I wanted to plot a bar chart I recoded reaction scores. The original coding of reaction scores was on a 6-point Likert-scale, from 1 to 7. This was a relative scale, where 1 was a very good impression of Steinmeier and a very bad impression of Merkel, 4 was neutral reaction and 7 was coded as a very good impression of Merkel and a very bad impression of Steinmeier. For the purpose of my plot I recoded it as -3 "in favor of Steinmeier", 0 "neutral reaction" and 3 "in favor of Merkel". For the purpose of answering the reserch question with a plot I recoded ages into four Groups "Gen Y (18-29yrs)", "Gen X (30-44yrs)", "Boomers (45-63yrs)", "Builders (64+ yrs). Keep in mind that those are the ages of those generations in 2009.
 
-Data Wrangling and Visualization
+**Data Wrangling and Visualization.**
 
 ```{r}
 #| label: fig-plot_margarita
 #| fig-cap: Average Reactions on debate strategies by Speaker
 #| fig-height: 8 
 #| fig-width: 11
-
-# Data Wrangling and Visualization.
-
 
 responders |> #I use the tidy responders.
   select(Responder, Wave, "45") |>
@@ -764,13 +762,13 @@ Overall, each strategy evokes similar reactions across generations and between c
 
 I want to know whether people's judgments on the performance of the live debate for both candidates actually relate to their voting preference, that is to say, if you actually think one candidate did better than the other in the debate, will you just vote for him/her?
 
-**Measurement**
+**Measurement.**
 
-***Debate performance preference*** For people's judgement on debate performance, it was measured in a hh:mm:ss format which record people's live reactions per second since the start of the debate, with score scaled between 1 to 7. 1 means strong preference over Merkel, and strong dislike for Steinmeier, 4 being neutral, and verse visa. I calculate the means of the score for each responder.
+***Debate performance preference: *** For people's judgement on debate performance, it was measured in a hh:mm:ss format which record people's live reactions per second since the start of the debate, with score scaled between 1 to 7. 1 means strong preference over Merkel, and strong dislike for Steinmeier, 4 being neutral, and verse visa. I calculate the means of the score for each responder.
 
-***Voting preference*** For their voting behavior, I decide to use the measurement of "sympathy" for each candidate as the variable "voting intention" did not record people's exact voting preference. This was measured twice, before (wave 1) and right after (wave 2) the debate, which allow us to see the change over periods. One problem here is the sympathy score is measured separately for both Merkel and Steinmeier, unlike the measurement for debate reaction. So for the sake of uniformity, I sum up the sympathy scores for Merkel and Steinmeier, and calculate the percentage of sympathy towards Steinmeier and use that as people's voting inclination. For example, if a respondent has a sympathy score of 2 for Merkel and 8 for Steinmeier, on a scale of 0 to 1, the 0. 8 means a higher likelihood of voting for Steinmeier.
+***Voting preference: *** For their voting behavior, I decide to use the measurement of "sympathy" for each candidate as the variable "voting intention" did not record people's exact voting preference. This was measured twice, before (wave 1) and right after (wave 2) the debate, which allow us to see the change over periods. One problem here is the sympathy score is measured separately for both Merkel and Steinmeier, unlike the measurement for debate reaction. So for the sake of uniformity, I sum up the sympathy scores for Merkel and Steinmeier, and calculate the percentage of sympathy towards Steinmeier and use that as people's voting inclination. For example, if a respondent has a sympathy score of 2 for Merkel and 8 for Steinmeier, on a scale of 0 to 1, the 0. 8 means a higher likelihood of voting for Steinmeier.
 
-***Party identification*** Party id are divided in three categories.
+***Party identification:*** Party id are divided in three categories.
 
 ```{r}
 #for the group party of the data tidying, I did not apply principle three (not using content_analysis dataset) and three (have to calculate the average score from the live debate reaction, so this step is not necessary for my own data project), also the data joining part, so you may have to reload the "debate" dataset:
@@ -823,7 +821,7 @@ responders <- responders |>
          -Participation_W3, -Participation_W4) |>
   relocate(Responder, Wave, Participation)
 
-#--------------------indivisual part: responder dataset-----------------
+#--------------------individual part: responder dataset-----------------
 
 responders_sympathy_party <- responders |>
   select(Responder, Wave, "24_01", "24_02", "56_01", "57") |> # select sympathy sccore for Merkel and Steinmeier, party identification and party leaning
@@ -925,11 +923,11 @@ anim_save("plot_debateperformace_votingintention.gif")
 
 ```
 
-**First impression**
+**First impression.**
 
 So basically the data is actually spread throughout the graph, with the center of the graph actually representing a neutral attitude. The left and right divisions of the chart mean that whether people prefer Merkel or Steinmeier in the debate, and the top and bottom divisions of the graph mean that whether people are more likely to vote for Steinmeier or Merkel.
 
-**Interpretation of the plot**
+**Interpretation of the plot.**
 
 Basically this plot provides an answer to my research question, which is the relationship between people's reaction to two candidates' debate performance and their voting intentions. The x-axis stands for viewers' judgments for the performance, if they think Merkel performs better, then they are in the right part of the plot; the y-axis represents the possibility of people's voting on the candidates (which is measured from the sympathy score), if you are more likely to vote for Merkel, then you are in the topper part, and vice versa. People's voting preference was measured four times, with wave one (before the debate), wave two (right after the debate), and wave three and four (before and after the election).
 
@@ -941,7 +939,9 @@ But over time, support for Merkel has increased in all three graphs, which may d
 
 ## 9. Conclusions
 
-In sum, the GLES 2009 data indicates and analyses indicate that the 2009 Debate was unimpressive. The substantive debate topics did not have much of an impact on the German public's real-time reactions and general evaluations of candidates' performances during the TV duel. Only small exceptions. Similarly, the impressions regarding Steinmeier and Merkel stayed quite neutral throughout the debate: There are some differences in impressions throughout the debate between male and female responders within different age groups, although these differences are quite small. When it comes to the reactions that debate strategies evoked to the German public we observed similar reactions across generations and between candidates with small exceptions. On average strategies worked in favor of the candidate that used them, with attack and self-presentation being the two strategies that evoked more positive average reactions to the candidate. Lastly, support for Merkel has increased in all three graphs, which may due to reasons other than the debate; and this also explains the reason that despite Steinmeier did better in the debate, it was Merkel who ultimately won the election. From those findings we conclude that the TV debate had a small effect on the German public.
+In sum, analyses carried out on the GLES 2009 data indicate that the 2009 TV duel between Merkel and Steinmeier was arguably underwhelming and unimpressive. The substantive debate topics did not have much of an impact on the German public's real-time reactions and general evaluations of candidates' performances during the confrontation. There were only small exceptions, such as economic themes, where Merkel gave a slightly worse impression to those who assessed her performance as disappointing.
+
+In line with this finding, overall reactions to Merkel and Steinmeier remained quite neutral throughout the debate. There were some minor differences in impressions among male and female responders within distinct age groups. Likewise, when it came to debate strategies, the German public exhibited similar reactions across generations and candidates, with few exceptions. On average, attack and self-presentation were the two tactics that evoked the most positive average impressions. Lastly, it appears that support for Merkel increased across the board, despite Steinmeier faring better in the TV duel. This may be due to reasons beyond the debate, and aligns with the outcome of Merkel ultimately winning the election. As we expected, and in accordance with German pundits, media outlets, and politicians, we can thus conclude that the TV duel pitching Merkel against Steinmeier had a small effect on the German electorate.
 
 ## 10. References
 
