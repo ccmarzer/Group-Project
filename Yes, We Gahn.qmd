@@ -76,7 +76,7 @@ library(deeplr) # ...and the "deeplr" library, for translating textual data in G
 The GLES 2009 data can be imported using the `readr` package that is part of the tidyverse. The three tables on responders' political behaviour (responders 2009), their live reactions during the TV duel (Debate 2009), and on the debate's contents and dynamics (content_anaysis_eng) are formatted as a `.csv` file, and can be imported with the following code.
 
 ```{r, include = FALSE}
-setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
+#setwd("C:/Users/Mattia aka Mario/Desktop/UvA/Second Year/Using R for data wrangling, analysis and visualization (C. Scholz & X. Gao)/Group Project/German Chancellor Debate") # Setting the working directory inside the chunk, as we prefer to set different directories in future chunks.
 
 debate <- read_csv("Debate 2009.csv", show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
 
@@ -346,9 +346,13 @@ The responders characteristics and responders tables also have a one-to-many rel
 
 ## 7. Scope of the data
 
-\[A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?\]
+The data we used in this Project consisted of three data files: Responders2009.csv, Debate 2009.csv and Content Analysis debate 2009.csv. The first file contained data/information from viewers/participants (n=225) collected before the debate (Wave 1), directly after the debate (Wave 2), 1-2 weeks after the debate (Wave 3), and 4 - 6 weeks after the debate (Wave 4). The scope of this data included characteristics of the viewers such as age, sex, education level ,and political participation data such as voting intention, party identity, and political interest among others.
 
-A concise but accurate description of the scope of the data for the general reader: Which information is present for which subjects, geography, and time? Which doubts about the quality of the data arise from Criteria 1 – 4?
+The second data file Debate 2009.csv contained the second-to-second live reaction to the statements made by the two candidates in the TV duel. The way live reaction was measured for the candidates is on a Likert scale from 1-7 with 1 being "very good impression of Steinmeir and very bad impression of Merkel", 4 being a neutral impression and 7 being "Very good impression of Merkel, and very bad impression of Steinmeier". This data contained real time responses of the viewers to the debate for every second.
+
+The last data file, Content Analysis debate 2009.csv, contained analysed data from the debate such as themes of discussion, strategies, all divided by sentence. Also each sentence was measured for duration from starting minute to end minute.
+
+As mentioned above the quality of data did not violate any of the 4 tidy criteria. The only imperfection we spotted was in the content analysis data set were they start to measure form second 28'' instead of 1''.
 
 **add a comment on the imperfections in the debate recordings (seconds 1-28, 2769, and 5494), see Mattia's operations on the content analysis data set in the section where we find the foreign key**
 
@@ -679,14 +683,50 @@ Nevertheless, it should be noted that the plot is zoomed in on the y-axis: it on
 
 Report and briefly present Research Question 3 to the general public.
 
-**Research Question 3:** How do the different types of candidate narratives/strategies(acclaims, attacks, defenses, self-criticisms) influence viewer impressions, and are there specific patterns over time?
+**Research Question 3:** Are there debate strategies that work better (evoke positive responses of the viewers)? 
+
+Data Wrangling and Visualization
 
 ```{r}
+#| label: fig-plot_margarita
+#| fig-cap: Average Reactions on debate strategies by Speaker
+#| fig-height: 8 
+#| fig-width: 11
+
 # Data Wrangling and Visualization.
+
+
+debate |>  
+  mutate(recoded_reaction = case_when(
+    score == 1 ~ -3,
+    score == 2 ~ -2,
+    score == 3 ~ -1,
+    score == 4 ~ 0,
+    score == 5 ~ 1,
+    score == 6 ~ 2,
+    score == 7 ~ 3)) |> 
+  inner_join(content_analysis,debate, by = "time")|> 
+  group_by(Strategy, Speaker) |> 
+  summarise(avg_reaction = mean(recoded_reaction, na.rm = TRUE)) |> 
+  filter(Speaker %in% c("Merkel", "Steinmeier")) |> 
+  ggplot(aes(x = Strategy, y = avg_reaction, fill = Strategy)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  labs(title = "Average Viewer Reaction to Each Strategy per Speaker",
+       x = "Strategies",
+       y = "Average Reaction") +
+  facet_wrap(~Speaker) +
+  scale_fill_brewer(palette = "Dark2", breaks = c("Strategy1", "Strategy2", "Strategy3", "Strategy4", "Strategy5", "Strategy6")) +  # Choose specific colors
+  geom_vline(xintercept = 0.5, color = "black", linetype = "solid") +  # Add a vertical line
+  geom_hline(yintercept = 0, color = "black", linetype = "solid") +  # Add a horizontal line
+theme_minimal() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.spacing = unit(0.2, "lines"),  # Adjust the spacing between facets
+        strip.background = element_rect(fill = "black", color = "white"),
+        strip.text = element_text(size = 10, face = "bold", color = "white"))
 
 ```
 
-Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
+\`Present both a pattern (as a first impression) and deviations from this pattern (inviting reflection about the pattern). Do not be not more complex than necessary and focus on the story. Accompanying text required to understand the source, contents, and scope of the data visualizations, aimed at a general audience, like a blog post.
 
 ### 8.4 ✧ Research Question 4 (Iria Cheng)
 
