@@ -78,11 +78,11 @@ The GLES 2009 data can be imported using the `readr` package that is part of the
 ```{r, include = FALSE}
 # We avoid setting the working directory inside this chunk, as this would bind every user to change the directory path when executing the code. To import the data, we thus refer to raw file URLs on GitHub. We understand this solution may not work if the files are moved in the future, but it is currently the best way to refer to the GLES 2009 data we employ, and especially its translated versions in English.
 
-debate <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Debate%202009.csv?token=GHSAT0AAAAAACMWXOEMOYXEBKFQ6OZIGMUOZN6NMDA"), show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
+debate <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Debate%202009.csv"), show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
 
-responders <- read_csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv?token=GHSAT0AAAAAACMWXOENF2BSICNHWBQFB4N4ZN6NKDQ", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
+responders <- read_csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
 
-content_analysis <- read.csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/content_analysis_eng.csv?token=GHSAT0AAAAAACMWXOEM4RK5LMGV2NVATV4SZN6NJHA") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
+content_analysis <- read.csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
 ```
 
 ### 3.3 ✧ How and why did we translate the text?
@@ -761,9 +761,9 @@ I want to know whether people's judgments on the performance of the live debate 
 
 **Measurement.**
 
-***Debate performance preference: *** For people's judgement on debate performance, it was measured in a hh:mm:ss format which record people's live reactions per second since the start of the debate, with score scaled between 1 to 7. 1 means strong preference over Merkel, and strong dislike for Steinmeier, 4 being neutral, and verse visa. I calculate the means of the score for each responder.
+***Debate performance preference:*** For people's judgement on debate performance, it was measured in a hh:mm:ss format which record people's live reactions per second since the start of the debate, with score scaled between 1 to 7. 1 means strong preference over Merkel, and strong dislike for Steinmeier, 4 being neutral, and verse visa. I calculate the means of the score for each responder.
 
-***Voting preference: *** For their voting behavior, I decide to use the measurement of "sympathy" for each candidate as the variable "voting intention" did not record people's exact voting preference. This was measured twice, before (wave 1) and right after (wave 2) the debate, which allow us to see the change over periods. One problem here is the sympathy score is measured separately for both Merkel and Steinmeier, unlike the measurement for debate reaction. So for the sake of uniformity, I sum up the sympathy scores for Merkel and Steinmeier, and calculate the percentage of sympathy towards Steinmeier and use that as people's voting inclination. For example, if a respondent has a sympathy score of 2 for Merkel and 8 for Steinmeier, on a scale of 0 to 1, the 0. 8 means a higher likelihood of voting for Steinmeier.
+***Voting preference:*** For their voting behavior, I decide to use the measurement of "sympathy" for each candidate as the variable "voting intention" did not record people's exact voting preference. This was measured twice, before (wave 1) and right after (wave 2) the debate, which allow us to see the change over periods. One problem here is the sympathy score is measured separately for both Merkel and Steinmeier, unlike the measurement for debate reaction. So for the sake of uniformity, I sum up the sympathy scores for Merkel and Steinmeier, and calculate the percentage of sympathy towards Steinmeier and use that as people's voting inclination. For example, if a respondent has a sympathy score of 2 for Merkel and 8 for Steinmeier, on a scale of 0 to 1, the 0. 8 means a higher likelihood of voting for Steinmeier.
 
 ***Party identification:*** Party id are divided in three categories.
 
