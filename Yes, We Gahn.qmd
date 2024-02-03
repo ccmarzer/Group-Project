@@ -58,7 +58,7 @@ The four individual research questions formulated with the GLES 2009 data are sh
 
 ### 3.1 ✧ Install packages and load the necessary libraries
 
-To get started, the packages required for the analysis should be installed and loaded into the library. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, and visualization.
+To get started, the packages required for the analysis should be installed and loaded into the library. Packages are extensions to the R statistical programming language, necessary for several tasks we plan to carry out, such as data translation, wrangling, visualization, and animation.
 
 ```{r, include = FALSE}
 # If needed, the user must install the "deeplr" library, and the Github "deeplr" repository via the "devtools" package.
@@ -67,8 +67,18 @@ To get started, the packages required for the analysis should be installed and l
 # install.packages("devtools")
 # devtools::install_github("zumbov2/deeplr")
 
+# The "gganimate", "transformr", and "gifski" packages are also required for the animated visualization of Research Question 4.
+
+# install.packages(c("gganimate", "transformr", "gifski"))
+
 library(tidyverse) # Loading the "tidyverse" library for data wrangling, analysis, and visualization...
 library(deeplr) # ...and the "deeplr" library, for translating textual data in German with DeepL.
+
+# Also loading the libraries needed for the animated visualization of Research Question 4: "gganimate", "gifski", and "transformr".
+
+library(gganimate)
+library(gifski)
+library(transformr)
 ```
 
 ### 3.2 ✧ Import data
@@ -80,9 +90,9 @@ The GLES 2009 data can be imported using the `readr` package that is part of the
 
 debate <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Debate%202009.csv"), show_col_types = FALSE) # Importing the "Debate 2009.csv" data, containing the real-time reactions of all respondents during the debate.
 
-responders <- read_csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv", show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
+responders <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv"), show_col_types = FALSE) # Importing the "Responders2009.csv" data, containing panel data concerning socio-demographic information, and political opinions and behaviours, of all respondents.
 
-content_analysis <- read.csv("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/content_analysis_eng.csv") # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
+content_analysis <- read.csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/content_analysis_eng.csv")) # Importing the version of the "Content analysis debate 2009.csv" data translated in English, containing information regarding the content analysis of the TV debate of 2009.
 ```
 
 ### 3.3 ✧ How and why did we translate the text?
@@ -669,6 +679,9 @@ ggplot(aes(x = time, y = score_avg_time, color = as.factor(Gender_rc), linetype 
     panel.background = element_rect(fill = "white", color = "black", linewidth = 0.7), #fill the background of the panels to white, set the lines around it to size 0.7 and in black.
     panel.spacing = unit(1, "lines")) #adjust the space between the four panels to 1, so the reader can visually seperate them better
 
+# Removing the wrangled "df_lx" data set to keep the environment clean.
+rm(df_lx)
+
 ```
 
 The figure above shows the average live impressions regarding Steinmeier and Merkel during the entire live debate. It visualizes the average impressions per four age groups (young-adults, adults, middle-aged and senor), and within each age group a distinction between female and male responders is made.
@@ -697,13 +710,13 @@ In addition, as I wanted to plot a bar chart I recoded reaction scores. The orig
 #| fig-height: 8 
 #| fig-width: 11
 
-responders |> #I use the tidy responders.
+responders |> #I use the tidy responders dataset.
   select(Responder, Wave, "45") |>
   # I only select the four necessary variables: "Responder", "Wave" and "45" which is the age variable.
   rename(Age = "45") |>
-  # I rename the "45" variable as Age so that it easier to code it later
-  filter(Age != "99a") |> #remove the missings values in "Age" which in this case are 99a by using the filter()
-  filter(Wave %in% "Wave 1" ) |> #I only include the cases of responders that from the wave 1 because the way we structured the data in the tidying part (responder by wave) would have been a problem in my case. 
+  # I rename the "45" variable as Age so that it easier to code it later.
+  filter(Age != "99a") |> # I remove the missing values in "Age" which in this case are 99a by using the filter() function.
+  filter(Wave %in% "Wave 1" ) |> #I only include the cases of responders that are observed in Wave 1 because the way we structured the data in the tidying part (responder by wave) would have been a problem in my case. 
   group_by(Responder) |> 
   inner_join(debate |> select (Responder, time, score),
              by = "Responder") |>
@@ -720,19 +733,24 @@ responders |> #I use the tidy responders.
     score == 7 ~ 3 #in favor of Merkel
     ))|>  #with mutate() I create a new column "recorded_reaction where I recode all reaction scores in a way that will make it easier to  interpret in the graph which candidate the score is in favor of.
   mutate(Age_Group = cut(as.numeric(Age),
-                         breaks = c(18,30,45,64,Inf), #Inf for the 64 + indicating no upper limit
+                         breaks = c(18,30,45,64,Inf), # Inf for the 64 + indicating no upper limit
                          labels = c("Gen Y (18-29yrs)", "Gen X (30-44yrs)", "Boomers (45-63yrs)", "Builders (64+ yrs)"),
                          include.lowest = TRUE)) |> #here I mutated age as well as I wanted to group it and instead of numbers to make it into categories. I used cut() for that, I defined the where a group started with the breaks argument and labeled them with labels argument. 
   group_by(Strategy, Speaker, Age_Group) |> 
   summarise(avg_reaction = mean(recoded_reaction, na.rm = TRUE)*10) |> #with the summarise() I created a new variable that will have the calculated means of the recoded reactions, making sure that missing values ar ignored.
   filter(Speaker %in% c("Merkel", "Steinmeier")) |> #I filter the speakers selecting only the two candidates.
-  ggplot(aes(x = Strategy, y = avg_reaction, fill = Strategy)) + #first layer of the plot where I define what I wish to plot, in my case I am ploting strategies and average reactions to strategies. 
+  ggplot(aes(x = Strategy, y = avg_reaction, fill = Strategy)) + #first layer of the plot where I define what I wish to plot, in my case I am plotting strategies and average reactions to strategies. 
   geom_bar(stat = "identity", position = "dodge", color = "white") + #layer that creates the bar chart
   labs(title = "Reactions of Generations on Strategies used in the 2009 Debate",
        subtitle = "Reaction scores closer to 3 are in favor of Merkel while reaction scores closer to -3 are in favor of Steinmeier, scores close to 0 are neutral.",
        x = "Strategies",
        y = "Average Reaction") +
   facet_grid(Age_Group~Speaker) + #in this layer I create the facets by Speaker and Age_Group. The columns to correspond with Speaker and the rows of the grid to correspond with Age_group. 
+  scale_x_discrete(labels = c("Attack", "Defense", "No strategy",
+                              "Praise to the Opponent",
+                              "Self-criticism",
+                              "Self-presentation"
+                              )) + # I must rename ticks on the x-axis, because "Praise to the Opponent" (in German) was wrongly translated by DeepL to "Praise from the opponent". Thus, I specify the correct translation.
   scale_fill_brewer(palette = "Dark2", breaks = c("Strategy1", "Strategy2", "Strategy3", "Strategy4", "Strategy5", "Strategy6")) +  # I choose specific color palette for the strategy columns and make sure that each one will have a different color.
   geom_vline(xintercept = 0.5, color = "black", linetype = "solid") +  # adding a vertical line between facets
   geom_hline(yintercept =  0, color = "black", linetype = "solid") +  # adding a horizontal line between facets
@@ -741,17 +759,15 @@ theme(axis.text.x = element_text(angle = 45, hjust = 1),
         panel.spacing = unit(0.2, "lines"),  # here I adjust the text on the x-axis by rotating so that strategies dont overlap.
         strip.background = element_rect(fill = "slategray1", color = "black"), #I use this to set the background and the corder color of the labels in my facet.
         strip.text = element_text(size = 10, face = "bold", color = "black")) #Lastly, this layer adjust the appearance of the text in the labels such as size, color and how bold.
-
-
 ```
 
-Dividing the chart in two based on Candidate allows us to compare between the Merkel and Steimeier and across generations. Our first impression of the bar chart is that there are not significant differences between generations when it comes to average reaction to the strategies of each candidate. But with a second look we can spot some interesting differences across generation and between candidates. For example the Builders' generation in average reacts in favor of Merkel with all her strategies but has neutral average reactions to the strategies that Steinmeier uses.
+Dividing the chart in two facets, based on Candidate, allows us to compare between Merkel and Steimeier, and across generations. Our first impression of the bar chart is that there are not significant differences between generations when it comes to average reaction to the strategies of each candidate. However, on a second look, we can spot some interesting differences across generations and between candidates. For example, on average the Builders' generation reacts in favour of Merkel with all her strategies, but has neutral average reactions to all the strategies that Steinmeier uses.
 
-If we compare average reactions to strategies inside generation groups we see that viewers across the Builders generation reacted in favor of Merkel, very much so that even when Steinmeier used strategies of self-criticism and defense, or even when he did not use any strategy they were slightly in favor of Merkel. The Boomers generation in average reacted in favor of the Candidate when the candidate used the stategies of attack and self-presentation. We can observe similar patterns across the Gen Y. Across Gen X the strategies of defense and lack of strategy evoke neutral reactions for Merkel but the former strategy of defense evokes on average positive reactions for Steinmeier.
+If we compare average reactions to strategies inside generation groups we see that viewers across the Builders generation generally reacted in favour of Merkel, very much so that even when Steinmeier used strategies of self-criticism and defense, or even when he did not use any strategy, they found themselves slightly in favour of Merkel. On average, the Boomers generation reacted in favour of any candidate when either Merkel or Steinmeier used the strategies of attack and self-presentation. We can observe similar patterns across the Gen Y. Among Gen X respondents, the strategy of defense, and lack of strategies, evoke neutral reactions for Merkel. On the other hand, the strategy of defense evokes positive reactions for Steinmeier.
 
-So when it comes to strategies that Merkel used, we see that she did not have the strategy "praise from the opponent". "Praise from the opponent " was a strategy that only Steinmeier had and when used it worked in favor of him across all generations better than any other strategy. Althought, it worked in his favor, Steinmeier did not use this strategy we can say that he "received" it from Merkel, making it clearer now why it is missing from her strategies.
+When it comes to strategies that Merkel used, we can see that she was not associated with the strategy "praise to the opponent". Thus, "Praise to the opponent" was a strategy that was only referred to Merkel, and solely employed by Steinmeier. This means that when Steinmeier praised Merkel, this worked in favour of him across all generations, better than any other strategy. Ironically, it appears that the best reactions in favour of Steinmeier were actually generated by complimenting his previous ally in government, and now opponent, Angela Merkel!
 
-Overall, each strategy evokes similar reactions across generations and between candidates with small exceptions that we could only observe by creating facets.
+Overall, each strategy evokes similar reactions across generations and between candidates, with small exceptions that we could only observe by generating specific facets.
 
 ### 8.4 ✧ Research Question 4 (Iria Cheng)
 
@@ -767,22 +783,26 @@ I want to know whether people's judgments on the performance of the live debate 
 
 ***Party identification:*** Party id are divided in three categories.
 
-```{r}
-#for the group party of the data tidying, I did not apply principle three (not using content_analysis dataset) and three (have to calculate the average score from the live debate reaction, so this step is not necessary for my own data project), also the data joining part, so you may have to reload the "debate" dataset:
+**Data Wrangling.**
 
-debate <- read_csv("Debate 2009.csv", show_col_types = FALSE)
+```{r}
+#for the group party of the data tidying, I did not apply principle three (not using content_analysis data set) and three (have to calculate the average score from the live debate reaction, so this step is not necessary for my own data project), also the data joining part, so you may have to reload the "debate" dataset:
+
+debate_iria <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Debate%202009.csv"), show_col_types = FALSE)
 
 #and all the selected operations applied to the "responder" dataset from previous are listed here, so you can just run the following lines:
 
-responders <- read_csv("Responders2009.csv", show_col_types = FALSE) 
-responders <- responders |> rename(
+responders_iria <- read_csv(url("https://raw.githubusercontent.com/ccmarzer/Group-Project/main/Responders2009.csv"), show_col_types = FALSE)
+
+responders_iria <- responders_iria |> rename(
                      Location = Standort, 
                      Participation_W1 = Teilnahme1, 
                      Participation_W2 = Teilnahme2, 
                      Participation_W3 = Teilnahme3,
                      Participation_W4 = Teilnahme4
                      )
-responders <- responders |>
+
+responders_iria <- responders_iria |>
   rename_with(~sub("(^[A-D])(.*)", "\\1-\\2", .), matches("^[A-D]")) |>
   pivot_longer(
     cols = starts_with("A") | starts_with("B") | starts_with("C") | starts_with("D"), 
@@ -820,32 +840,38 @@ responders <- responders |>
 
 #--------------------individual part: responder dataset-----------------
 
-responders_sympathy_party <- responders |>
+responders_sympathy_party <- responders_iria |>
   select(Responder, Wave, "24_01", "24_02", "56_01", "57") |> # select sympathy sccore for Merkel and Steinmeier, party identification and party leaning
   group_by(Responder) |>                                 #group the data set by responder
-  rename( sympathy_merkel = "24_01", sympathy_steinmeier = "24_02", party_id = "56_01", party_leaning = "57")|>                                  #rename the variables
+  rename(sympathy_merkel = "24_01", sympathy_steinmeier = "24_02", party_id = "56_01", party_leaning = "57")|>                                  #rename the variables
   filter(
     !(sympathy_merkel %in% c(99, 102, 103, 104) |
       sympathy_steinmeier %in% c(99, 102, 103, 104) |
       party_id %in% c(99) |
       party_leaning %in% c(99, 100)))                    #drop the NAs
 
+# Removing the wrangled "responders_iria" data set to keep the environment clean.
+rm(responders_iria)
 
 #---------------for the debate dataset------------------
 
-debate <- debate %>%
+debate_iria <- debate_iria %>%
   mutate(performance_reaction = rowMeans(select(., starts_with("t"))))|> #calculate the means of people's reaction scores on the live debate
   select(Responder, performance_reaction)
 
 #------------------inner_join the two dataset---------------
-responders_sympathy_party<- inner_join(responders_sympathy_party, debate, by = "Responder")
+responders_sympathy_party <- inner_join(responders_sympathy_party, debate_iria, by = "Responder")
+
 #I prefer "inner_join" because I only want to keep the keys (reponders) that present in both datasets
+
+# Removing the wrangled "debate_iria" data set to keep the environment clean.
+rm(debate_iria)
 
 #-----------------------------------------------------------------
 #then I have to group the data by responder, to fill all "party_id", "party_leaning" and "performance reaction" for wave 2, 3 and 4 for each responder with the exact same value as wave one. this step is done for the aim of later visualization. I will explain the reason later again when interpreting the plot.
 
 fill_responder <- function(responders_sympathy_party) 
-  responders_sympathy_party <- responders_sympathy_party|>
+  responders_sympathy_party <- responders_sympathy_party |>
     fill(c("party_id", "party_leaning","performance_reaction"), .direction = "down")
   
 responders_sympathy_party_1 <- responders_sympathy_party |>     #create a new df      
@@ -855,6 +881,9 @@ responders_sympathy_party_1 <- responders_sympathy_party |>     #create a new df
   bind_rows() |>   # "group_map" with "fill_responder" operate for each group separately, and "bind_rows" combined these separated dfs into one
   mutate(time_wave = as.numeric(str_replace(Wave, "Wave ", "")))
 
+# Removing the wrangled "responders_sympathy_party" data set and the auxiliary "fill_responder" function to keep the environment clean.
+rm(responders_sympathy_party, fill_responder)
+
 #---------------------------------------------------------------------------  
 responders_sympathy_party_1$time_wave <- as.numeric(responders_sympathy_party_1$time_wave)
 #turn wave into numeric variable
@@ -862,7 +891,6 @@ responders_sympathy_party_1$time_wave <- as.numeric(responders_sympathy_party_1$
 responders_sympathy_party_1 <- responders_sympathy_party_1|>
     mutate(voting_preference = sympathy_merkel / (sympathy_merkel + sympathy_steinmeier)) 
 #to calculate the percentage of people's voting preference for Merkel over Steinmeier, to make it consistant with the measurement of live debate reaction
-  
 
 #recode the names of party id:
 responders_sympathy_party_1 <- responders_sympathy_party_1 |>
@@ -874,30 +902,33 @@ responders_sympathy_party_1 <- responders_sympathy_party_1 |>
     TRUE ~ as.character(party_id)))|>
   filter(!is.na(party_id))
 
-
-data_final <- responders_sympathy_party_1|>
+data_final <- responders_sympathy_party_1 |>
   drop_na(performance_reaction)|>
   select(Responder, time_wave, voting_preference, performance_reaction, party_id, party_leaning)
 
+# Removing the wrangled "responders_sympathy_party_1" data set to keep the environment clean.
+rm(responders_sympathy_party_1)
 
 #i obeserve there are some cases (responders) which does not have four waves of observation, i.e., only three waves, so i have to filter them because the missing values may cause unpredicted movements when plotting animation (that's also the reason I got a plot with dots moving horizontally at first)
 
-data_final<- data_final |>
+data_final <- data_final |>
   group_by(Responder) |>
   filter(n_distinct(time_wave) == 4) |>
   ungroup()
+```
 
+**Data Visualization.**
 
-#------using ggplot and gganimate to visualize------------------
+```{r}
+#| label: fig-plot_iria
+#| fig-cap: "Changes over Waves 1-4 of Debate Performance Reaction Towards Merkel and Steinmeier against Responders Voting Intentions" 
 
-install.packages(c("ggplot2","gganimate","gifski"))
-library(ggplot2)
-library(gganimate)
+# Using ggplot and gganimate to visualize.
 
 plot_animate <- ggplot(data_final, aes(performance_reaction, voting_preference, color = party_id ))+
-  geom_point(alpha = 0.5, show.legend = TRUE)+
+  geom_point(alpha = 0.5, show.legend = TRUE) +
    geom_vline(xintercept = 4,  color = "gray") +
-   geom_hline(yintercept = 0.5, color = "gray") +  # to add vertical and horizonal neutral lines so that readers can process information about attitude changes over time more easzily
+   geom_hline(yintercept = 0.5, color = "gray") +  # to add vertical and horizontal neutral lines so that readers can process information about attitude changes over time more easzily
    geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(~party_id)+         #to seperate the plot by parties
   labs(title = "Wave: {frame_time}", x = "deabte performance", y = "voting intention")+
@@ -914,9 +945,11 @@ plot_animate <- ggplot(data_final, aes(performance_reaction, voting_preference, 
   annotate("text", x = 7, y = 1, label = "Merkel", color = "red") +  
   annotate("text", x = 1, y = 0, label = "Steinmeier", color = "blue") #use the function annotate to add text labels
 
-
 animate(plot_animate, width = 1500, height = 500)
-anim_save("plot_debateperformace_votingintention.gif")
+# anim_save("plot_debate_performance_votingintention.gif")
+
+# Removing the wrangled "data_final" data set and the "plot_animate" object to keep the environment clean.
+rm(data_final, plot_animate)
 
 ```
 
